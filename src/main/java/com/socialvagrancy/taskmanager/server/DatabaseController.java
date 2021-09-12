@@ -25,8 +25,15 @@ public class DatabaseController
 {
 	private MySQLConnector db_conn;
 	private Logger logbook;
-	private Gson gson; 
+	private Gson gson;
+	private String api_root;
 
+	
+	//=======================================
+	// Initialization	
+	//=======================================
+	
+	
 	public DatabaseController()
 	{
 		// Load configuration file.
@@ -54,8 +61,6 @@ public class DatabaseController
 			
 			ServerConfiguration conf = yaml.load(iStream);
 			
-			System.out.println(conf.getURL());
-
 			return conf;
 		}
 		catch(Exception e)
@@ -66,17 +71,28 @@ public class DatabaseController
 		}
 	}
 
+	//=======================================
+	// Authentication	
+	//=======================================
+	
 	public String login(String source, String json)
 	{
 		UserCredentials credentials = gson.fromJson(json, UserCredentials.class);
 
 		logbook.logWithSizedLogRotation("Login attempt from " + source + " with username "
 				+ credentials.getUsername(), 3);
-		
+	
+			
 
 		return "success";
 	}
 
+	public String verifyDBCredentials(UserCredentials creds)
+	{
+		String api_query = "SELECT id, password FROM user "
+					+ "WHERE name = ?";
+			
+	}
 
 }
 

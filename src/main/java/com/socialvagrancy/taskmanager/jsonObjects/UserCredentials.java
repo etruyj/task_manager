@@ -8,11 +8,13 @@ package com.socialvagrancy.taskmanager.jsonObjects;
 
 public class UserCredentials extends Response
 {
+	private String database;
 	private String password;
 	private String username;
 
 	public UserCredentials()
 	{
+		database = "none";
 		password = "none";
 		username = "none";
 	}
@@ -33,6 +35,7 @@ public class UserCredentials extends Response
 	// Gettors
 	//==============================================
 
+	public String getDatabase() { return database; }
 	public String getPassword() { return password; }
 	public String getUsername() { return username; }
 }
