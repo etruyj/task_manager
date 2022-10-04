@@ -1,0 +1,17 @@
+com/socialvagrancy/taskmanager/server/ui/TaskServer.class
+com/socialvagrancy/taskmanager/server/utils/http/Server.class
+com/socialvagrancy/taskmanager/server/command/InitializeLocationTable.class
+com/socialvagrancy/taskmanager/server/command/InitializeGroupTable.class
+com/socialvagrancy/taskmanager/server/command/InitializeDatabase.class
+com/socialvagrancy/taskmanager/server/command/InitializeTextTable.class
+com/socialvagrancy/taskmanager/server/utils/database/MySQLConnector.class
+com/socialvagrancy/taskmanager/server/command/InitializeUserTable.class
+com/socialvagrancy/taskmanager/server/command/StartServer.class
+com/socialvagrancy/taskmanager/server/ui/ServerController.class
+com/socialvagrancy/taskmanager/server/command/InitializeProjectTable.class
+com/socialvagrancy/taskmanager/server/ui/ArgParser.class
+com/socialvagrancy/taskmanager/App.class
+com/socialvagrancy/taskmanager/server/utils/database/PostgresConnector.class
+com/socialvagrancy/taskmanager/server/command/InitializeContactTable.class
+com/socialvagrancy/taskmanager/server/utils/http/TaskManagerAPI.class
+com/socialvagrancy/taskmanager/server/command/InitializeAccountTable.class
