@@ -24,7 +24,7 @@ public class ListLocations
 		ArrayList<Location> location_list = new ArrayList<Location>();
 		Location location;
 
-		String query = "SELECT id, name, building, street_1, street_2, city, state, postal_code, country, notes_text_id FROM location "
+		String query = "SELECT location.id, location.name, building, street_1, street_2, city, state, postal_code, country, notes_text_id FROM location "
 			+ "INNER JOIN account ON account.id = location.account_id "
 			+ "WHERE account.name=? AND active=?;";
 

@@ -46,19 +46,19 @@ public class CreateLocation
 		}
 		
 		// Check for uniqueness
-		String query = "SELECT id FROM locations "
+		String query = "SELECT id FROM location "
 				+ "WHERE account_id=? AND name=?;";
 
 		try
 		{
 			PreparedStatement pst = psql.prepare(query, logbook);
 			
-			pst.setString(1, location.accountId());
+			pst.setObject(1, UUID.fromString(location.accountId()));
 			pst.setString(2, location.name());
 
 			ResultSet rs = pst.executeQuery();
 
-			if(rs != null)
+			if(rs.next())
 			{
 				throw new Exception("Error: location name is not unique for this account.");
 			}
@@ -92,6 +92,10 @@ public class CreateLocation
 				location.setNotesId("");
 			}
 		}
+		else
+		{
+			location.setNotesId("");
+		}
 
 		location = insertNew(location, psql, logbook);
 
@@ -105,27 +109,39 @@ public class CreateLocation
 
 	public static Location insertNew(Location location, PostgresConnector psql, Logger logbook)
 	{
+		logbook.INFO("Querying " + location.name());
+
 		String query = "INSERT INTO location (id, name, account_id, notes_text_id, building, street_1, street_2, city, state, postal_code, country, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 		try
 		{
 			PreparedStatement pst = psql.prepare(query, logbook);
-		
-			pst.executeUpdate();
+			
+			logbook.INFO("Preparing " + location.name());
 
-			pst.setObject(1, location.id());
+			pst.setObject(1, UUID.fromString(location.id()));
+			logbook.INFO("Setting name");
 			pst.setString(2, location.name());
-			pst.setString(3, location.accountId());
-			pst.setString(4, location.notesId());
+			logbook.INFO("Setting account");
+			pst.setObject(3, UUID.fromString(location.accountId()));
+			logbook.INFO("Setting notes");
+			pst.setObject(4, UUID.fromString(location.notesId()));
+			logbook.INFO("Setting building");
 			pst.setString(5, location.building());
 			pst.setString(6, location.street1());
 			pst.setString(7, location.street2());
+			logbook.INFO("Setting city");
 			pst.setString(8, location.city());
 			pst.setString(9, location.state());
 			pst.setString(10, location.postalCode());
 		       	pst.setString(11, location.country()); 	
+			logbook.INFO("Setting boolean");
 			pst.setBoolean(12, true);
 
+			logbook.INFO("Executing");
+
+			pst.executeUpdate();
+		
 			return location;	
 		}
 		catch(SQLException e)

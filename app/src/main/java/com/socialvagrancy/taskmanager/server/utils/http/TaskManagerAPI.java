@@ -26,6 +26,7 @@ import org.glassfish.grizzly.http.server.Request;
 import com.socialvagrancy.taskmanager.server.command.CreateAccount;
 import com.socialvagrancy.taskmanager.server.command.CreateLocation;
 import com.socialvagrancy.taskmanager.server.command.ListAccounts;
+import com.socialvagrancy.taskmanager.server.command.ListLocations;
 import com.socialvagrancy.taskmanager.server.utils.database.PostgresConnector;
 import com.socialvagrancy.taskmanager.structure.Account;
 import com.socialvagrancy.taskmanager.structure.Location;
@@ -112,7 +113,9 @@ public class TaskManagerAPI
 			logbook.INFO("Creating an account with description.");
 
 			Account request = gson.fromJson(body, Account.class);	
-		
+			// Build the variable for passing to the function.
+			request.setName(name);
+
 			try
 			{
 				account = CreateAccount.nameWithDescription(request, psql, logbook);
@@ -129,11 +132,49 @@ public class TaskManagerAPI
 		return gson.toJson(response);
 	}
 
-	@PUT
-	@Path("/location/{name}")
+	@GET
+	@Path("/account/{name}/locations")
 	@Consumes("application/json")
 	@Produces("application/json")
-	public String createLocation(@PathParam("name") String name, String body)
+	public String listLocations(@PathParam("name") String account_name, @QueryParam("active") String active_state)
+	{
+		Logger logbook = (Logger) config.getProperty("logger");
+		PostgresConnector psql = (PostgresConnector) config.getProperty("database");
+
+		Gson gson = new Gson();
+
+		logbook.INFO("Servicing request: /account/" + account_name + "/locations/active=" + active_state);
+
+		boolean state;
+
+		if(active_state.equals("true"))
+		{
+			state = true;
+		}
+		else if(active_state.equals("false"))
+		{
+			state = false;
+		}
+		else
+		{
+			// Catch all. If state isn't specified or specified
+			// incorrectly, only active accounts are returned.
+			logbook.WARN("Improper active state specified. Setting to true.");
+			state = true;
+		}
+
+		ArrayList<Location> location_list = ListLocations.byStatus(account_name, state, psql, logbook);
+
+		logbook.INFO("Found (" + location_list.size() + ") locations.");
+
+		return gson.toJson(location_list);
+	}
+
+	@PUT
+	@Path("/account/{account}/location/{location}")
+	@Consumes("application/json")
+	@Produces("application/json")
+	public String createLocation(@PathParam("location") String name, String body)
 	{
 		Logger logbook = (Logger) config.getProperty("logger");
 		PostgresConnector psql = (PostgresConnector) config.getProperty("database");

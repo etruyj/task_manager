@@ -19,8 +19,9 @@ public class InitializeAccountTable
 			+ "id UUID PRIMARY KEY, "
 			+ "name VARCHAR UNIQUE NOT NULL, "
 			+ "abbreviation VARCHAR, "
+			+ "organization_id UUID, "
 			+ "desc_text_id UUID, "
-			+ "FOREIGN KEY (organziation_id) REFERENCES organization (id), "
+			+ "FOREIGN KEY (organization_id) REFERENCES organization (id), "
 			+ "FOREIGN KEY (desc_text_id) REFERENCES text (id));";
 
 		if(!psql.update(query, logbook))

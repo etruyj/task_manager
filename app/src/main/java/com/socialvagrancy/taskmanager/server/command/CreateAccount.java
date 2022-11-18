@@ -33,7 +33,7 @@ public class CreateAccount
 		{
 			PreparedStatement pst = psql.prepare(query, logbook);
 			
-			pst.setObject(1, account.id());
+			pst.setObject(1, UUID.fromString(account.id()));
 			pst.setString(2, account.name());
 			pst.setString(3, account.abbreviation());
 
@@ -88,10 +88,10 @@ public class CreateAccount
 				String query = "INSERT INTO account (id, name, abbreviation, desc_text_id) VALUES (?, ?, ?, ?);";
 				PreparedStatement pst = psql.prepare(query, logbook);
 			
-				pst.setObject(1, account.id());
+				pst.setObject(1, UUID.fromString(account.id()));
 				pst.setString(2, account.name());
 				pst.setString(3, account.name());
-				pst.setObject(4, account.description());
+				pst.setObject(4, UUID.fromString(account.description()));
 
 				pst.executeUpdate();
 
