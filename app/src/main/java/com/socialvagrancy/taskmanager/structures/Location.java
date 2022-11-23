@@ -34,11 +34,13 @@ public class Location
 	public String street1() { return street_1; }
 	public String street2() { return street_2; }
 
+	public void setAccountId(String a) { account_id = a; }
 	public void setBuilding(String b) { building = b; }
 	public void setCity(String c) { city = c; }
 	public void setCountry(String c) { country = c; }
 	public void setId(String d) { id = d; }
 	public void setName(String n) { name = n; }
+	public void setNotes(String n) { notes = n; }
 	public void setPostalCode(String p) { postal_code = p; }
 	public void setState(String s) { state = s; }
 	public void setStreet1(String s) { street_1 = s; }
@@ -46,7 +48,7 @@ public class Location
 
 	public void setNotesId(String nid)
 	{
-		notes_id = id;
+		notes_id = nid;
 		notes = null;
 	}
 

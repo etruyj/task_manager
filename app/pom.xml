@@ -56,6 +56,11 @@
 	    <version>2.9.1</version>
     </dependency>
     <dependency>
+	    <groupId>org.mindrot</groupId>
+	    <artifactId>jbcrypt</artifactId>
+	    <version>0.4</version>
+    </dependency>
+    <dependency>
 	    <groupId>com.socialvagrancy</groupId>
 	    <artifactId>utils</artifactId>
 	    <version>1.6.1</version>
@@ -78,7 +83,7 @@
             			<id>copy-dependencies</id>
             			<phase>prepare-package</phase>
             			<goals>
-                			<goal>copy-dependencies</goal>
+                			<goal>copy-dependency</goal>
             			</goals>
             			<configuration>
 					<outputDirectory>${project.build.directory}/lib</outputDirectory>

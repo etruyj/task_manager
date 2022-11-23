@@ -22,12 +22,15 @@ public class InitializeContactTable
 			+ "role VARCHAR, "
 			+ "phone VARCHAR, "
 			+ "email VARCHAR, "
+			+ "active BOOLEAN, "
 			+ "location_id UUID, "
 			+ "account_id UUID, "
-			+ "note_text_id UUID, "
+			+ "text_id UUID, "
+			+ "organization_id UUID, "
 			+ "FOREIGN KEY (location_id) REFERENCES location (id), "
 			+ "FOREIGN KEY (account_id) REFERENCES account (id), "
-			+ "FOREIGN KEY (note_text_id) REFERENCES text (id));";
+			+ "FOREIGN KEY (organization_id) REFERENCES organization (id), "
+			+ "FOREIGN KEY (text_id) REFERENCES text (id));";
 
 		if(!psql.update(query, logbook))
 		{

@@ -19,7 +19,7 @@ public class ListLocations
 {
 	public static ArrayList byStatus(String account_name, boolean active_state, PostgresConnector psql, Logger logbook)
 	{
-		logbook.INFO("Fetching list of locations associated with account " + account_name + "...");
+		logbook.INFO("Fetching list of locations associated with account [" + account_name + "]...");
 
 		ArrayList<Location> location_list = new ArrayList<Location>();
 		Location location;

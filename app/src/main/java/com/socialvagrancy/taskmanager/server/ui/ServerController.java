@@ -6,6 +6,7 @@
 
 package com.socialvagrancy.taskmanager.server.ui;
 
+import com.socialvagrancy.taskmanager.server.command.CreateUser;
 import com.socialvagrancy.taskmanager.server.command.InitializeDatabase;
 import com.socialvagrancy.taskmanager.server.command.StartServer;
 import com.socialvagrancy.taskmanager.server.utils.database.PostgresConnector;
@@ -19,8 +20,13 @@ public class ServerController
 	public ServerController(String address, String table, String user, String pass)
 	{
 		psql = new PostgresConnector(address, table, user, pass);
-		logbook = new Logger("../log/server-main.log", 10240, 10, 1);
+		logbook = new Logger("../log/server-main.log", 1024000, 3, 1);
 	}
+
+	public void createUser(String username, String organization)
+	{
+		CreateUser.withPrompts(psql, logbook);
+	}	
 
 	public void initializeServer()
 	{

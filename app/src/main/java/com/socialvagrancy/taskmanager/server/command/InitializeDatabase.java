@@ -17,10 +17,11 @@ public class InitializeDatabase
 		InitializeOrganizationTable.createTable(psql, logbook);
 		InitializeTextTable.createTable(psql, logbook);
 		InitializeAccountTable.createTable(psql, logbook);
-		InitializeContactTable.createTable(psql, logbook);
-		InitializeGroupTable.createTable(psql, logbook);
 		InitializeLocationTable.createTable(psql, logbook);
-		InitializeProjectTable.createTable(psql, logbook);
+		InitializeContactTable.createTable(psql, logbook);
 		InitializeUserTable.createTable(psql, logbook);
+		InitializeUserOrganizationTable.createTable(psql, logbook);
+		//InitializeGroupTable.createTable(psql, logbook);
+		//InitializeProjectTable.createTable(psql, logbook);
 	}
 }

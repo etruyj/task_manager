@@ -1,3 +1,5 @@
+com/socialvagrancy/taskmanager/server/command/InitializeUserOrganizationTable.class
+com/socialvagrancy/taskmanager/server/command/ListContacts.class
 com/socialvagrancy/taskmanager/server/ui/TaskServer.class
 com/socialvagrancy/taskmanager/server/command/CreateContact.class
 com/socialvagrancy/taskmanager/server/command/InitializeLocationTable.class
@@ -13,9 +15,11 @@ com/socialvagrancy/taskmanager/server/utils/database/PostgresConnector.class
 com/socialvagrancy/taskmanager/server/command/InitializeContactTable.class
 com/socialvagrancy/taskmanager/server/command/ListAccounts.class
 com/socialvagrancy/taskmanager/server/command/AddText.class
+com/socialvagrancy/taskmanager/server/command/CreateOrganization.class
 com/socialvagrancy/taskmanager/server/utils/http/Server.class
 com/socialvagrancy/taskmanager/server/command/InitializeGroupTable.class
 com/socialvagrancy/taskmanager/server/command/InitializeDatabase.class
+com/socialvagrancy/taskmanager/structure/Contact.class
 com/socialvagrancy/taskmanager/server/command/StartServer.class
 com/socialvagrancy/taskmanager/structure/Account.class
 com/socialvagrancy/taskmanager/server/ui/ServerController.class
@@ -23,5 +27,6 @@ com/socialvagrancy/taskmanager/server/command/InitializeOrganizationTable.class
 com/socialvagrancy/taskmanager/App.class
 com/socialvagrancy/taskmanager/server/command/CreateAccount.class
 com/socialvagrancy/taskmanager/server/utils/http/TaskManagerAPI.class
+com/socialvagrancy/taskmanager/server/command/CreateUser.class
 com/socialvagrancy/taskmanager/structure/ServerResponse.class
 com/socialvagrancy/taskmanager/server/command/InitializeAccountTable.class

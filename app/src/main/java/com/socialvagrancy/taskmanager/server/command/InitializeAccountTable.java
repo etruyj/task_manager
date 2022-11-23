@@ -17,7 +17,7 @@ public class InitializeAccountTable
 
 		String query = "CREATE TABLE IF NOT EXISTS account ("
 			+ "id UUID PRIMARY KEY, "
-			+ "name VARCHAR UNIQUE NOT NULL, "
+			+ "name VARCHAR NOT NULL, "
 			+ "abbreviation VARCHAR, "
 			+ "organization_id UUID, "
 			+ "desc_text_id UUID, "

@@ -17,7 +17,58 @@ import java.util.UUID;
 
 public class CreateLocation
 {
-	public static Location parseThenCreate(Location location, PostgresConnector psql, Logger logbook) throws Exception 
+	public static boolean isDuplicate(String name, UUID account_id, UUID org_id, PostgresConnector psql, Logger logbook)
+	{
+		String query = "SELECT id FROM location "
+			+ "WHERE name=? AND account_id=? AND organization_id=?;";
+
+		try
+		{
+			PreparedStatement pst = psql.prepare(query, logbook);
+
+			pst.setString(1, name);
+			pst.setObject(2, account_id);
+			pst.setObject(3, org_id);
+
+			ResultSet rs = pst.executeQuery();
+
+			if(rs.next())
+			{
+				// Results mean the object exists in the table.
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		catch(Exception e)
+		{
+			return true;
+		}
+	}
+
+	public static Location withNameOnly(String name, UUID account_id, UUID org_id, PostgresConnector psql, Logger logbook) throws Exception
+	{
+		Location location = new Location();
+
+		location.setName(name);
+		location.setCity("");
+		location.setCountry("");
+		location.setAccountId(account_id.toString());
+
+		try
+		{
+			return parseThenCreate(location, org_id, psql, logbook);
+		}
+		catch(Exception e)
+		{
+			throw e;
+		}
+		
+	}
+
+	public static Location parseThenCreate(Location location, UUID org_id, PostgresConnector psql, Logger logbook) throws Exception 
 	{
 		//===============================
 		// Parse Exceptions
@@ -79,66 +130,66 @@ public class CreateLocation
 
 		location.setId(uuid.toString());
 
+
+		//===============================
+		// Create Notes
+		//===============================
+
 		if(location.notes() != null)
 		{
-			UUID notes_id = AddText.insertNew(location.notes(), psql, logbook);
+			location.setNotes(" ");
+		}
 
-			if(notes_id != null)
-			{
-				location.setNotesId(notes_id.toString());
-			}
-			else
-			{
-				location.setNotesId("");
-			}
+		UUID notes_id = AddText.insertNew(location.notes(), psql, logbook);
+
+		if(notes_id != null)
+		{
+			location.setNotesId(notes_id.toString());
 		}
 		else
 		{
-			location.setNotesId("");
+			throw new Exception("Unabled to save notes.");
 		}
 
-		location = insertNew(location, psql, logbook);
+		//===============================
+		// Make Query
+		//===============================
+	
+		Location created_location = insertNew(location, org_id, psql, logbook);
 
-		if(location == null)
+		if(created_location == null)
 		{
+			AddText.deleteText(UUID.fromString(location.notesId()), psql, logbook);
+
 			throw new Exception("Unabled to create new location.");
 		}
 
-		return location;
+		return created_location;
 	}
 
-	public static Location insertNew(Location location, PostgresConnector psql, Logger logbook)
+	public static Location insertNew(Location location, UUID org_id, PostgresConnector psql, Logger logbook)
 	{
 		logbook.INFO("Querying " + location.name());
 
-		String query = "INSERT INTO location (id, name, account_id, notes_text_id, building, street_1, street_2, city, state, postal_code, country, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+		String query = "INSERT INTO location (id, name, account_id, notes_text_id, building, street_1, street_2, city, state, postal_code, country, active, organization_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 		try
 		{
 			PreparedStatement pst = psql.prepare(query, logbook);
 			
-			logbook.INFO("Preparing " + location.name());
-
 			pst.setObject(1, UUID.fromString(location.id()));
-			logbook.INFO("Setting name");
 			pst.setString(2, location.name());
-			logbook.INFO("Setting account");
 			pst.setObject(3, UUID.fromString(location.accountId()));
-			logbook.INFO("Setting notes");
 			pst.setObject(4, UUID.fromString(location.notesId()));
-			logbook.INFO("Setting building");
 			pst.setString(5, location.building());
 			pst.setString(6, location.street1());
 			pst.setString(7, location.street2());
-			logbook.INFO("Setting city");
 			pst.setString(8, location.city());
 			pst.setString(9, location.state());
 			pst.setString(10, location.postalCode());
 		       	pst.setString(11, location.country()); 	
-			logbook.INFO("Setting boolean");
 			pst.setBoolean(12, true);
-
-			logbook.INFO("Executing");
+			pst.setObject(13, org_id);
 
 			pst.executeUpdate();
 		

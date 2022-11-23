@@ -17,7 +17,7 @@ public class InitializeLocationTable
 
 		String query = "CREATE TABLE IF NOT EXISTS location ("
 			+ "id UUID PRIMARY KEY, "
-			+ "name VARCHAR UNIQUE NOT NULL, "
+			+ "name VARCHAR NOT NULL, "
 			+ "building VARCHAR, "
 			+ "street_1 VARCHAR, "
 			+ "street_2 VARCHAR, "

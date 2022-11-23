@@ -20,15 +20,19 @@ import jakarta.ws.rs.core.MediaType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 
 import org.glassfish.grizzly.http.server.Request;
 
 import com.socialvagrancy.taskmanager.server.command.CreateAccount;
+import com.socialvagrancy.taskmanager.server.command.CreateContact;
 import com.socialvagrancy.taskmanager.server.command.CreateLocation;
 import com.socialvagrancy.taskmanager.server.command.ListAccounts;
+import com.socialvagrancy.taskmanager.server.command.ListContacts;
 import com.socialvagrancy.taskmanager.server.command.ListLocations;
 import com.socialvagrancy.taskmanager.server.utils.database.PostgresConnector;
 import com.socialvagrancy.taskmanager.structure.Account;
+import com.socialvagrancy.taskmanager.structure.Contact;
 import com.socialvagrancy.taskmanager.structure.Location;
 import com.socialvagrancy.taskmanager.structure.ServerResponse;
 import com.socialvagrancy.utils.Logger;
@@ -92,6 +96,7 @@ public class TaskManagerAPI
 		
 		ServerResponse response = new ServerResponse();
 		Account account;
+		UUID org_id = null;
 
 		logbook.INFO("Servicing request: /account/" + name);
 	
@@ -100,7 +105,7 @@ public class TaskManagerAPI
 			logbook.INFO("Creating an account without a description.");
 			try
 			{
-				account = CreateAccount.nameOnly(name, psql, logbook);
+				account = CreateAccount.nameOnly(name, org_id, psql, logbook);
 				return gson.toJson(account);
 			}
 			catch(Exception e)
@@ -118,7 +123,7 @@ public class TaskManagerAPI
 
 			try
 			{
-				account = CreateAccount.nameWithDescription(request, psql, logbook);
+				account = CreateAccount.nameWithDescription(request, org_id, psql, logbook);
 				
 				return gson.toJson(account);
 			}
@@ -130,6 +135,78 @@ public class TaskManagerAPI
 
 
 		return gson.toJson(response);
+	}
+	
+	@GET
+	@Path("/account/{name}/contacts")
+	@Consumes("application/json")
+	@Produces("application/json")
+	public String listAccountContacts(@PathParam("name") String account_name, @QueryParam("active") String active_state)
+	{
+		Logger logbook = (Logger) config.getProperty("logger");
+		PostgresConnector psql = (PostgresConnector) config.getProperty("database");
+
+		Gson gson = new Gson();
+		ServerResponse response = new ServerResponse();
+
+		logbook.INFO("Servicing request: /account/" + account_name + "/contacts/active=" + active_state);
+
+		try
+		{
+			ArrayList<Contact> contact_list = ListContacts.forAccount(account_name, active_state, psql, logbook);
+
+			logbook.INFO("Found (" + contact_list.size() + ") contacts.");
+
+			return gson.toJson(contact_list);
+		}
+		catch(Exception e)
+		{
+			response.setMessage(e.getMessage());
+
+			return gson.toJson(response);
+		}
+	}
+
+
+	@PUT
+	@Path("/account/{account}/contact/")
+	@Consumes("application/json")
+	@Produces("application/json")
+	public String createContact(@PathParam("account") String account_name, String body)
+	{
+		Logger logbook = (Logger) config.getProperty("logger");
+		PostgresConnector psql = (PostgresConnector) config.getProperty("database");
+
+		Gson gson = new Gson();
+		
+		ServerResponse response = new ServerResponse();
+
+		logbook.INFO("Servicing requrest: /account/" + account_name + "/contact");
+
+		if(body != null)
+		{
+			try
+			{
+				Contact contact = gson.fromJson(body, Contact.class);
+				contact = CreateContact.parseThenCreate(contact, null, psql, logbook);
+
+				return gson.toJson(contact);
+
+			}
+			catch(Exception e)
+			{
+				logbook.ERR(e.getMessage());
+				response.setMessage(e.getMessage());
+			}
+		}
+		else
+		{
+			logbook.ERR("Unable to create contact. No contact information provided.");
+			response.setMessage("Unable to create contact. No contact information provided.");
+
+		}
+
+		return gson.toJson(response);	
 	}
 
 	@GET
@@ -174,15 +251,16 @@ public class TaskManagerAPI
 	@Path("/account/{account}/location/{location}")
 	@Consumes("application/json")
 	@Produces("application/json")
-	public String createLocation(@PathParam("location") String name, String body)
+	public String createLocation(@PathParam("account") String account_name, @PathParam("location") String name, String body)
 	{
 		Logger logbook = (Logger) config.getProperty("logger");
 		PostgresConnector psql = (PostgresConnector) config.getProperty("database");
 		Gson gson = new Gson();
 
 		ServerResponse response = new ServerResponse();
+		UUID org_id = null;
 
-		logbook.INFO("Servicing request: /location/" + name);
+		logbook.INFO("Servicing request: /account/" + account_name + "/location/" + name);
 
 		if(body != null)
 		{
@@ -192,7 +270,7 @@ public class TaskManagerAPI
 
 				Location location = gson.fromJson(body, Location.class);
 
-				location = CreateLocation.parseThenCreate(location, psql, logbook);
+				location = CreateLocation.parseThenCreate(location, org_id, psql, logbook);
 			
 				return gson.toJson(location);
 			}

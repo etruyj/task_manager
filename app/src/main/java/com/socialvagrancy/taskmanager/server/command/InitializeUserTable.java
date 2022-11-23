@@ -17,11 +17,10 @@ public class InitializeUserTable
 
 		String query = "CREATE TABLE IF NOT EXISTS client_user ("
 			+ "id UUID PRIMARY KEY, "
-			+ "name VARCHAR NOT NULL, "
+			+ "name VARCHAR UNIQUE NOT NULL, "
 			+ "password VARCHAR, "
-			+ "salt VARCHAR, "
-			+ "contact_id UUID, "
-			+ "FOREIGN KEY (contact_id) REFERENCES contact (id));";
+			+ "active BOOLEAN NOT NULL, "
+			+ "reset_pass_on_login BOOLEAN NOT NULL);";
 
 		if(!psql.update(query, logbook))
 		{

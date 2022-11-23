@@ -14,6 +14,9 @@ public class TaskServer
 
 		switch(aparser.getCommand())
 		{
+			case "create-admin-user":
+				server.createUser("admin", "pass");
+				break;
 			case "initialize-server":
 				server.initializeServer();
 				break;
