@@ -17,9 +17,33 @@ import java.util.UUID;
 
 public class CreateAccount
 {
+	public static void deleteAccount(Account account, UUID org_id, PostgresConnector psql, Logger logbook)
+	{
+		logbook.WARN("Deleting account [" + account.name() + "]");
+		
+		String query = "DELETE FROM account "
+			+ "WHERE id=? AND organization_id=?;";
+
+		try
+		{
+			PreparedStatement pst = psql.prepare(query, logbook);
+
+			pst.setObject(1, UUID.fromString(account.id()));
+			pst.setObject(2, org_id);
+
+			pst.executeUpdate();
+
+		}
+		catch(SQLException e)
+		{
+			logbook.ERR(e.getMessage());
+			logbook.ERR("Unable to delete account [" + account.name() + "]");
+		}
+	}
+
 	public static boolean isDuplicate(String name, UUID org_id, PostgresConnector psql, Logger logbook)
 	{
-		String query = "SELECT id FROM accout "
+		String query = "SELECT id FROM account "
 			+ "WHERE name=? AND organization_id=?;";
 
 		try
@@ -55,7 +79,7 @@ public class CreateAccount
 
 		logbook.INFO("Creating account: " + name);
 
-		if(!isDuplicate(name, org_id, psql, logbook))
+		if(isDuplicate(name, org_id, psql, logbook))
 		{
 			throw new Exception("Account [" + name + "] already exists.");
 		}
@@ -65,7 +89,7 @@ public class CreateAccount
 		account.setName(name);
 		account.setAbbreviation(name);
 
-		String query = "INSERT INTO account (id, name, abbreviation, organization_id) VALUES (?, ?, ?, ?)";
+		String query = "INSERT INTO account (id, name, abbreviation, text_id, organization_id) VALUES (?, ?, ?, ?, ?)";
 
 		try
 		{
@@ -74,7 +98,8 @@ public class CreateAccount
 			pst.setObject(1, UUID.fromString(account.id()));
 			pst.setString(2, account.name());
 			pst.setString(3, account.abbreviation());
-			pst.setObject(4, org_id);
+			pst.setObject(4, null);
+			pst.setObject(5, org_id);
 
 			pst.executeUpdate();
 
@@ -83,9 +108,8 @@ public class CreateAccount
 		{
 			System.err.println(e.getMessage());
 			logbook.ERR(e.getMessage());
-			logbook.ERR("Failed to put account: " + name);
 
-			throw new Exception(e.getMessage());
+			throw new Exception("Failed to create account: " + name);
 		}
 
 		return account;
@@ -98,12 +122,17 @@ public class CreateAccount
 		logbook.INFO("Creating account with text: " + account.name());
 
 
-		if(!isDuplicate(account.name(), org_id, psql, logbook))
+		if(isDuplicate(account.name(), org_id, psql, logbook))
 		{
 			throw new Exception("Account [" + account.name() + "] already exists.");
 		}
+		
+		UUID text_id = null;
 
-		UUID text_id = AddText.insertNew(account.description(), psql, logbook);
+		if(account.description() != null)
+		{
+			text_id = AddText.insertNew(account.description(), org_id, psql, logbook);
+		}
 
 		if(account.abbreviation() == null)
 		{
@@ -130,7 +159,7 @@ public class CreateAccount
 		{
 			try
 			{
-				String query = "INSERT INTO account (id, name, abbreviation, desc_text_id, organization_id) VALUES (?, ?, ?, ?, ?);";
+				String query = "INSERT INTO account (id, name, abbreviation, text_id, organization_id) VALUES (?, ?, ?, ?, ?);";
 				PreparedStatement pst = psql.prepare(query, logbook);
 			
 				pst.setObject(1, UUID.fromString(account.id()));
@@ -144,7 +173,7 @@ public class CreateAccount
 			}
 			catch(SQLException e)
 			{
-				AddText.deleteText(UUID.fromString(account.description()), psql, logbook);
+				AddText.deleteText(UUID.fromString(account.description()), org_id, psql, logbook);
 
 				System.err.println(e.getMessage());
 				logbook.ERR(e.getMessage());

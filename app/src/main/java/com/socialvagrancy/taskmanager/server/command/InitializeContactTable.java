@@ -30,7 +30,7 @@ public class InitializeContactTable
 			+ "FOREIGN KEY (location_id) REFERENCES location (id), "
 			+ "FOREIGN KEY (account_id) REFERENCES account (id), "
 			+ "FOREIGN KEY (organization_id) REFERENCES organization (id), "
-			+ "FOREIGN KEY (text_id) REFERENCES text (id));";
+			+ "FOREIGN KEY (text_id) REFERENCES text (id) ON DELETE CASCADE);";
 
 		if(!psql.update(query, logbook))
 		{

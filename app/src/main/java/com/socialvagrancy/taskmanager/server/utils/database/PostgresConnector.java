@@ -80,8 +80,6 @@ public class PostgresConnector
 
 		try
 		{
-			logbook.INFO("Connecting to database postgresql://" + db_server + ":5432/" + db_table + " with user " + db_user);
-
 			Class.forName("org.postgresql.Driver");
 
 			cxn = DriverManager.getConnection("jdbc:postgresql://" + db_server + ":5432/" + db_table, db_user, db_pass);

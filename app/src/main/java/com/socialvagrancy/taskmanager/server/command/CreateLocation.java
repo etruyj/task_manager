@@ -17,6 +17,29 @@ import java.util.UUID;
 
 public class CreateLocation
 {
+	public static void deleteLocation(Location location, UUID org_id, PostgresConnector psql, Logger logbook)
+	{
+		logbook.WARN("Deleting location [" + location.name() + "]");
+
+		String query = "DELETE FROM locaton "
+			+ "WHERE id=? AND organization_id=?;";
+
+		try
+		{
+			PreparedStatement pst = psql.prepare(query, logbook);
+
+			pst.setObject(1, UUID.fromString(location.id()));
+			pst.setObject(2, org_id);
+
+			pst.executeUpdate();
+		}
+		catch(SQLException e)
+		{
+			logbook.ERR(e.getMessage());
+			logbook.ERR("Unable to delete location [" + location.name() + "]");
+		}
+	}
+
 	public static boolean isDuplicate(String name, UUID account_id, UUID org_id, PostgresConnector psql, Logger logbook)
 	{
 		String query = "SELECT id FROM location "
@@ -98,7 +121,7 @@ public class CreateLocation
 		
 		// Check for uniqueness
 		String query = "SELECT id FROM location "
-				+ "WHERE account_id=? AND name=?;";
+				+ "WHERE account_id=? AND name=? AND organization_id=?;";
 
 		try
 		{
@@ -106,6 +129,7 @@ public class CreateLocation
 			
 			pst.setObject(1, UUID.fromString(location.accountId()));
 			pst.setString(2, location.name());
+			pst.setObject(3, org_id);
 
 			ResultSet rs = pst.executeQuery();
 
@@ -125,7 +149,7 @@ public class CreateLocation
 		//===============================
 		
 		logbook.INFO("Creating location: " + location.name());
-		
+
 		UUID uuid = UUID.randomUUID();
 
 		location.setId(uuid.toString());
@@ -140,7 +164,7 @@ public class CreateLocation
 			location.setNotes(" ");
 		}
 
-		UUID notes_id = AddText.insertNew(location.notes(), psql, logbook);
+		UUID notes_id = AddText.insertNew(location.notes(), org_id, psql, logbook);
 
 		if(notes_id != null)
 		{
@@ -159,7 +183,7 @@ public class CreateLocation
 
 		if(created_location == null)
 		{
-			AddText.deleteText(UUID.fromString(location.notesId()), psql, logbook);
+			AddText.deleteText(UUID.fromString(location.notesId()), org_id, psql, logbook);
 
 			throw new Exception("Unabled to create new location.");
 		}
@@ -169,9 +193,7 @@ public class CreateLocation
 
 	public static Location insertNew(Location location, UUID org_id, PostgresConnector psql, Logger logbook)
 	{
-		logbook.INFO("Querying " + location.name());
-
-		String query = "INSERT INTO location (id, name, account_id, notes_text_id, building, street_1, street_2, city, state, postal_code, country, active, organization_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+		String query = "INSERT INTO location (id, name, account_id, text_id, building, street_1, street_2, city, state, postal_code, country, active, organization_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 		try
 		{

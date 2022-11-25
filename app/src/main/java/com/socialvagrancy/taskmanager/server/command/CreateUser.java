@@ -17,13 +17,46 @@ import org.mindrot.jbcrypt.BCrypt;
 import java.io.Console;
 import java.lang.StringBuilder;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Random;
 import java.util.UUID;
 
 public class CreateUser
 {
-	public static UUID insertNew(String username, char[] password, PostgresConnector psql, Logger logbook)
+	public static void deleteUser(UUID user_id, PostgresConnector psql, Logger logbook)
+	{
+		String query = "SELECT name FROM client_user WHERE id=?;";
+
+		try
+		{
+			PreparedStatement pst = psql.prepare(query, logbook);
+
+			pst.setObject(1, user_id);
+
+			ResultSet rs = pst.executeQuery();
+
+			while(rs.next())
+			{
+				logbook.WARN("Deleting user [" + rs.getString(1) + "]");
+
+				query = "DELETE FROM client_user WHERE id=?;";
+
+				pst = psql.prepare(query, logbook);
+
+				pst.setObject(1, user_id);
+
+				pst.executeUpdate();
+			}
+		}
+		catch(SQLException e)
+		{
+			logbook.ERR(e.getMessage());
+			logbook.ERR("Unable to delete user [" + user_id + "]");
+		}
+	}
+
+	public static UUID insertNew(String username, char[] password, PostgresConnector psql, Logger logbook) throws Exception
 	{
 		logbook.WARN("Creating username [" + username + "]");
 
@@ -51,8 +84,7 @@ public class CreateUser
 		{
 			System.err.println(e.getMessage());
 			logbook.ERR(e.getMessage());
-			logbook.ERR("Could not create user [" + username + "].");
-			return null;
+			throw new Exception("Could not create user [" + username + "].");
 		}
 
 	}
@@ -108,8 +140,6 @@ public class CreateUser
 			System.out.print("Please enter password for [" + user + "]: ");
 			char[] pass = cons.readPassword();
 
-			UUID user_id = insertNew(user, pass, psql, logbook);
-	
 			String first_name = "";
 
 			while(first_name.equals("") || first_name == null)
@@ -158,14 +188,22 @@ public class CreateUser
 				location = "[none]";
 			}
 
+			// Initialize as null and then test if they are edited.
+			// This allows the script to back out if any of the queries faile.
+			UUID user_id = null;
+			UUID org_id = null;
+			Account act = null;
+			Location loc = null;
+			Contact contact = null;
 
 			try
 			{
-				UUID org_id = CreateOrganization.insertNew(org, psql, logbook);
-				Account act = CreateAccount.nameOnly(account, org_id, psql, logbook);
-				Location loc = CreateLocation.withNameOnly(location, UUID.fromString(act.id()), org_id, psql, logbook);
+				user_id = insertNew(user, pass, psql, logbook);	
+				org_id = CreateOrganization.insertNew(org, psql, logbook);
+				act = CreateAccount.nameOnly(account, org_id, psql, logbook);
+				loc = CreateLocation.withNameOnly(location, UUID.fromString(act.id()), org_id, psql, logbook);
 			
-				Contact contact = CreateContact.withNameOnly(first_name, last_name, UUID.fromString(act.id()), UUID.fromString(loc.id()), org_id, psql, logbook);
+				contact = CreateContact.withNameOnly(first_name, last_name, UUID.fromString(act.id()), UUID.fromString(loc.id()), org_id, psql, logbook);
 			
 				mapToContact(user_id, org_id, UUID.fromString(contact.id()), 4, psql, logbook);
 
@@ -173,6 +211,32 @@ public class CreateUser
 			catch(Exception e)
 			{
 				System.err.println("ERROR: " + e.getMessage());
+				logbook.ERR(e.getMessage());
+
+				if(contact != null)
+				{
+					CreateContact.deleteContact(contact, org_id, psql, logbook);
+				}
+
+				if(loc != null)
+				{
+					CreateLocation.deleteLocation(loc, org_id, psql, logbook);
+				}
+
+				if(act != null)
+				{
+					CreateAccount.deleteAccount(act, org_id, psql, logbook);
+				}
+
+				if(org_id != null)
+				{
+					CreateOrganization.deleteOrganization(org_id, psql, logbook);
+				}
+
+				if(user_id != null)
+				{
+					deleteUser(user_id, psql, logbook);
+				}
 			}
 
 		}

@@ -18,7 +18,9 @@ public class InitializeTextTable
 
 		String query = "CREATE TABLE IF NOT EXISTS text ("
 			+ "id UUID PRIMARY KEY, "
-			+ "text VARCHAR);";
+			+ "text VARCHAR, "
+			+ "organization_id UUID, "
+			+ "FOREIGN KEY (organization_id) REFERENCES organization (id));";
 
 		if(!psql.update(query, logbook))
 		{

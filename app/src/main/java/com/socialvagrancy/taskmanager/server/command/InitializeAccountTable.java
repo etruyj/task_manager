@@ -20,9 +20,9 @@ public class InitializeAccountTable
 			+ "name VARCHAR NOT NULL, "
 			+ "abbreviation VARCHAR, "
 			+ "organization_id UUID, "
-			+ "desc_text_id UUID, "
+			+ "text_id UUID, "
 			+ "FOREIGN KEY (organization_id) REFERENCES organization (id), "
-			+ "FOREIGN KEY (desc_text_id) REFERENCES text (id));";
+			+ "FOREIGN KEY (text_id) REFERENCES text (id) ON DELETE CASCADE);";
 
 		if(!psql.update(query, logbook))
 		{

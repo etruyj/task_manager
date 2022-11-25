@@ -16,6 +16,29 @@ import java.util.UUID;
 
 public class CreateContact
 {
+	public static void deleteContact(Contact contact, UUID org_id, PostgresConnector psql, Logger logbook)
+	{
+		logbook.WARN("Deleting contact [" + contact.fullName() + "]");
+
+		String query = "DELETE FROM contact "
+			+ "WHERE id=? AND organization_id=?;";
+
+		try
+		{
+			PreparedStatement pst = psql.prepare(query, logbook);
+
+			pst.setObject(1, UUID.fromString(contact.id()));
+			pst.setObject(2, org_id);
+
+			pst.executeUpdate();
+		}
+		catch(SQLException e)
+		{
+			logbook.ERR(e.getMessage());
+			logbook.ERR("Unable to delete contact [" + contact.fullName() + "]");
+		}
+	}
+
 	public static Contact withNameOnly(String first_name, String last_name, UUID account_id, UUID location_id, UUID org_id, PostgresConnector psql, Logger logbook) throws Exception
 	{
 		Contact contact = new Contact();
@@ -60,7 +83,7 @@ public class CreateContact
 
 		if(contact.notes() == null)
 		{
-			UUID text_id = AddText.insertNew("", psql, logbook);
+			UUID text_id = AddText.insertNew("", organization_id, psql, logbook);
 
 			if(text_id != null)
 			{
@@ -92,7 +115,7 @@ public class CreateContact
 		}
 		catch(Exception e)
 		{
-			AddText.deleteText(UUID.fromString(contact.textId()), psql, logbook);
+			AddText.deleteText(UUID.fromString(contact.textId()), organization_id, psql, logbook);
 
 			logbook.ERR(e.getMessage());
 			logbook.ERR("Unabled to create contact: " + contact.fullName());

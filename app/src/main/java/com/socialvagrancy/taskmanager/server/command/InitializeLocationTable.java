@@ -26,12 +26,12 @@ public class InitializeLocationTable
 			+ "postal_code VARCHAR, "
 			+ "country VARCHAR, "
 			+ "account_id UUID, "
-			+ "notes_text_id UUID, "
+			+ "text_id UUID, "
 			+ "active BOOLEAN, "
 			+ "organization_id UUID, "
 			+ "FOREIGN KEY (account_id) REFERENCES account (id), "
 			+ "FOREIGN KEY (organization_id) REFERENCES organization (id), "
-			+ "FOREIGN KEY (notes_text_id) REFERENCES text (id));";
+			+ "FOREIGN KEY (text_id) REFERENCES text (id) ON DELETE CASCADE);";
 
 		if(!psql.update(query, logbook))
 		{

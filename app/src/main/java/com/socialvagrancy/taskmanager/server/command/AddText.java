@@ -15,19 +15,20 @@ import java.util.UUID;
 
 public class AddText
 {
-	public static boolean deleteText(UUID text_id, PostgresConnector psql, Logger logbook)
+	public static boolean deleteText(UUID text_id, UUID org_id, PostgresConnector psql, Logger logbook)
 	{
 		// Delete text from the text tabled based on uuid.
 
 		logbook.INFO("Deleting text with id [" + text_id.toString() + "]");
 
-		String query = "DELETE FROM text WHERE id=?";
+		String query = "DELETE FROM text WHERE id=? AND organization_id=?";
 
 		try
 		{
 			PreparedStatement pst = psql. prepare(query, logbook);
 
 			pst.setObject(1, text_id);
+			pst.setObject(2, org_id);
 
 			pst.executeUpdate();
 
@@ -42,13 +43,13 @@ public class AddText
 		}
 	}
 
-	public static UUID insertNew(String text, PostgresConnector psql, Logger logbook)
+	public static UUID insertNew(String text, UUID org_id, PostgresConnector psql, Logger logbook)
 	{
 		UUID uuid = UUID.randomUUID();
 
 		logbook.INFO("Inserting text with id [" + uuid.toString() + "]");
 
-		String query = "INSERT INTO text (id, text) VALUES (?, ?)";
+		String query = "INSERT INTO text (id, text, organization_id) VALUES (?, ?, ?)";
 
 		try
 		{
@@ -56,6 +57,7 @@ public class AddText
 			
 			pst.setObject(1, uuid);
 			pst.setString(2, text);
+			pst.setObject(3, org_id);
 
 			pst.executeUpdate();
 

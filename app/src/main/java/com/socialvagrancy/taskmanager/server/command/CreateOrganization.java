@@ -14,11 +14,44 @@ import com.socialvagrancy.taskmanager.server.utils.database.PostgresConnector;
 import com.socialvagrancy.utils.Logger;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
 public class CreateOrganization
 {
+	public static void deleteOrganization(UUID org_id, PostgresConnector psql, Logger logbook)
+	{
+		String query = "SELECT name FROM organization WHERE id=?;";
+
+		try
+		{
+			PreparedStatement pst = psql.prepare(query, logbook);
+
+			pst.setObject(1, org_id);
+
+			ResultSet rs = pst.executeQuery();
+
+			while(rs.next())
+			{
+				logbook.WARN("Deleting organization [" + rs.getString(1) + "]");
+
+				query = "DELETE FROM organization WHERE id=?;";
+
+				pst = psql.prepare(query, logbook);
+
+				pst.setObject(1, org_id);
+
+				pst.executeUpdate();
+			}
+		}
+		catch(SQLException e)
+		{
+			logbook.ERR(e.getMessage());
+			logbook.ERR("Unable to delete organization [" + org_id + "]");
+		}
+	}
+
 	public static UUID insertNew(String name, PostgresConnector psql, Logger logbook) throws Exception
 	{
 		logbook.WARN("Creating new organziation [" + name + "]");
@@ -41,7 +74,6 @@ public class CreateOrganization
 		catch(SQLException e)
 		{
 			logbook.ERR(e.getMessage());
-			logbook.ERR("Unable to create organization [" + name + "].");
 			throw new Exception("Unable to create organization [" + name + "]");
 		}
 	}
