@@ -10,6 +10,7 @@ import com.socialvagrancy.taskmanager.server.utils.database.PostgresConnector;
 import com.socialvagrancy.taskmanager.structure.Account;
 import com.socialvagrancy.taskmanager.structure.Contact;
 import com.socialvagrancy.taskmanager.structure.Location;
+import com.socialvagrancy.taskmanager.structure.server.PermissionLevel;
 import com.socialvagrancy.utils.Logger;
 
 import org.mindrot.jbcrypt.BCrypt;
@@ -89,7 +90,7 @@ public class CreateUser
 
 	}
 
-	public static void mapToContact(UUID user_id, UUID organization_id, UUID contact_id, int permission_level, PostgresConnector psql, Logger logbook) throws Exception
+	public static void mapToContact(UUID user_id, UUID organization_id, UUID contact_id, PermissionLevel permission_level, PostgresConnector psql, Logger logbook) throws Exception
 	{
 		UUID id = UUID.randomUUID();
 
@@ -107,7 +108,7 @@ public class CreateUser
 			pst.setObject(2, user_id);
 			pst.setObject(3, organization_id);
 			pst.setObject(4, contact_id);
-			pst.setInt(5, permission_level);
+			pst.setObject(5, permission_level);
 
 			pst.executeUpdate();
 		}
@@ -205,7 +206,7 @@ public class CreateUser
 			
 				contact = CreateContact.withNameOnly(first_name, last_name, UUID.fromString(act.id()), UUID.fromString(loc.id()), org_id, psql, logbook);
 			
-				mapToContact(user_id, org_id, UUID.fromString(contact.id()), 4, psql, logbook);
+				mapToContact(user_id, org_id, UUID.fromString(contact.id()), PermissionLevel.DATABASE_ADMIN, psql, logbook);
 
 			}
 			catch(Exception e)

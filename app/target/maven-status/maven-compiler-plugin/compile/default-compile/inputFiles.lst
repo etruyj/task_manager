@@ -7,6 +7,8 @@
 /home/etruyj/Documents/src/java/task_manager/app/src/main/java/com/socialvagrancy/taskmanager/server/command/AddText.java
 /home/etruyj/Documents/src/java/task_manager/app/src/main/java/com/socialvagrancy/taskmanager/structures/Location.java
 /home/etruyj/Documents/src/java/task_manager/app/src/main/java/com/socialvagrancy/taskmanager/server/utils/http/TaskManagerAPI.java
+/home/etruyj/Documents/src/java/task_manager/app/src/main/java/com/socialvagrancy/taskmanager/server/command/InitializeUserOrganizationTable.java
+/home/etruyj/Documents/src/java/task_manager/app/src/main/java/com/socialvagrancy/taskmanager/server/command/InitializeTokenTable.java
 /home/etruyj/Documents/src/java/task_manager/app/src/main/java/com/socialvagrancy/taskmanager/server/command/InitializeGroupTable.java
 /home/etruyj/Documents/src/java/task_manager/app/src/main/java/com/socialvagrancy/taskmanager/server/command/InitializeProjectTable.java
 /home/etruyj/Documents/src/java/task_manager/app/src/main/java/com/socialvagrancy/taskmanager/server/utils/http/Server.java
@@ -16,6 +18,7 @@
 /home/etruyj/Documents/src/java/task_manager/app/src/main/java/com/socialvagrancy/taskmanager/server/command/ListLocations.java
 /home/etruyj/Documents/src/java/task_manager/app/src/main/java/com/socialvagrancy/taskmanager/server/ui/ServerController.java
 /home/etruyj/Documents/src/java/task_manager/app/src/main/java/com/socialvagrancy/taskmanager/server/command/CreateUser.java
+/home/etruyj/Documents/src/java/task_manager/app/src/main/java/com/socialvagrancy/taskmanager/server/command/CreateOrganization.java
 /home/etruyj/Documents/src/java/task_manager/app/src/main/java/com/socialvagrancy/taskmanager/server/command/CreateContact.java
 /home/etruyj/Documents/src/java/task_manager/app/src/main/java/com/socialvagrancy/taskmanager/server/ui/TaskServer.java
 /home/etruyj/Documents/src/java/task_manager/app/src/main/java/com/socialvagrancy/taskmanager/server/command/CreateLocation.java
@@ -26,5 +29,7 @@
 /home/etruyj/Documents/src/java/task_manager/app/src/main/java/com/socialvagrancy/taskmanager/structures/ServerResponse.java
 /home/etruyj/Documents/src/java/task_manager/app/src/main/java/com/socialvagrancy/taskmanager/server/command/InitializeAccountTable.java
 /home/etruyj/Documents/src/java/task_manager/app/src/main/java/com/socialvagrancy/taskmanager/server/command/ListAccounts.java
+/home/etruyj/Documents/src/java/task_manager/app/src/main/java/com/socialvagrancy/taskmanager/server/command/GenerateToken.java
 /home/etruyj/Documents/src/java/task_manager/app/src/main/java/com/socialvagrancy/taskmanager/server/command/InitializeUserTable.java
 /home/etruyj/Documents/src/java/task_manager/app/src/main/java/com/socialvagrancy/taskmanager/structures/Account.java
+/home/etruyj/Documents/src/java/task_manager/app/src/main/java/com/socialvagrancy/taskmanager/structures/server/Credential.java

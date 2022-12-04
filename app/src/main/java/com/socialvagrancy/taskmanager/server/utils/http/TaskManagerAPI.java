@@ -11,8 +11,10 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.QueryParam;
@@ -27,14 +29,20 @@ import org.glassfish.grizzly.http.server.Request;
 import com.socialvagrancy.taskmanager.server.command.CreateAccount;
 import com.socialvagrancy.taskmanager.server.command.CreateContact;
 import com.socialvagrancy.taskmanager.server.command.CreateLocation;
+import com.socialvagrancy.taskmanager.server.command.GenerateToken;
 import com.socialvagrancy.taskmanager.server.command.ListAccounts;
 import com.socialvagrancy.taskmanager.server.command.ListContacts;
 import com.socialvagrancy.taskmanager.server.command.ListLocations;
+import com.socialvagrancy.taskmanager.server.command.ValidateToken;
 import com.socialvagrancy.taskmanager.server.utils.database.PostgresConnector;
 import com.socialvagrancy.taskmanager.structure.Account;
 import com.socialvagrancy.taskmanager.structure.Contact;
 import com.socialvagrancy.taskmanager.structure.Location;
+import com.socialvagrancy.taskmanager.structure.LoginCredential;
 import com.socialvagrancy.taskmanager.structure.ServerResponse;
+import com.socialvagrancy.taskmanager.structure.Token;
+import com.socialvagrancy.taskmanager.structure.server.Credential;
+import com.socialvagrancy.taskmanager.structure.server.PermissionLevel;
 import com.socialvagrancy.utils.Logger;
 
 import com.google.gson.Gson;
@@ -62,75 +70,106 @@ public class TaskManagerAPI
 	@GET
 	@Path("/accounts")
 	@Produces("application/json")
-	public String listAccounts(@QueryParam("name") String name)
+	public String listAccounts(@QueryParam("name") String name, @HeaderParam("Authorization") String auth_token)
 	{
 		Logger logbook = (Logger) config.getProperty("logger");
 		PostgresConnector psql = (PostgresConnector) config.getProperty("database");
 		Gson gson = new Gson();
+		ServerResponse response = new ServerResponse();
+		PermissionLevel min_required = PermissionLevel.ORGANIZATION_MONITOR;
 
 		logbook.INFO("Servicing request: /accounts");
 
-		ArrayList<Account> account_list;
-
-		if(name == null)
+		try
 		{
-			account_list = ListAccounts.all(psql, logbook);
-		}
-		else
-		{
-			account_list = ListAccounts.search(name, psql, logbook);
-		}
+			Credential creds = ValidateToken.generateCredentials(auth_token, psql, logbook);
+			if(min_required.checkPermission(creds.permissions()))
+			{
+			
+				ArrayList<Account> account_list;
 
-		return gson.toJson(account_list);
+				if(name == null)
+				{
+					account_list = ListAccounts.all(creds.organization(), psql, logbook);
+				}
+				else
+				{
+					account_list = ListAccounts.search(creds.organization(), name, psql, logbook);
+				}
+
+				return gson.toJson(account_list);
+			}
+			else
+			{
+				logbook.WARN("Restricted Access Attempt! User [" + creds.username() + "] attempted to access resource (/accounts).");
+
+				response.setMessage("Insufficient priviledges to access accounts.");
+			}
+		}
+		catch(Exception e)
+		{
+			logbook.ERR(e.getMessage());
+			
+			response.setMessage("ERROR: Unable to retrieve account list.");
+
+		}
+		
+		return gson.toJson(response);
 	}
 
 	@PUT
 	@Path("/account/{name}")
 	@Consumes("application/json")
 	@Produces("application/json")
-	public String createAccount(@PathParam("name") String name, String body)
+	public String createAccount(@PathParam("name") String name, @HeaderParam("Authorization") String auth_token, String body)
 	{
 		Logger logbook = (Logger) config.getProperty("logger");
 		PostgresConnector psql = (PostgresConnector) config.getProperty("database");
+		PermissionLevel min_required = PermissionLevel.ORGANIZATION_USER;
 		Gson gson = new Gson();
 		
 		ServerResponse response = new ServerResponse();
 		Account account;
-		UUID org_id = null;
 
 		logbook.INFO("Servicing request: /account/" + name);
-	
-		if(body == null)
+		
+		try
 		{
-			logbook.INFO("Creating an account without a description.");
-			try
+			Credential creds = ValidateToken.generateCredentials(auth_token, psql, logbook);
+
+			if(min_required.checkPermission(creds.permissions()))
 			{
-				account = CreateAccount.nameOnly(name, org_id, psql, logbook);
-				return gson.toJson(account);
+				if(body == null)
+				{
+					logbook.INFO("Creating an account without a description.");
+			
+					account = CreateAccount.nameOnly(name, UUID.fromString(creds.organization()), psql, logbook);
+					return gson.toJson(account);
+			
+				}
+				else
+				{
+					logbook.INFO("Creating an account with description.");
+
+					Account request = gson.fromJson(body, Account.class);	
+					// Build the variable for passing to the function.
+					request.setName(name);
+					
+					account = CreateAccount.nameWithDescription(request, UUID.fromString(creds.organization()), psql, logbook);
+				
+					return gson.toJson(account);
+				}
 			}
-			catch(Exception e)
+			else
 			{
-				response.setMessage(e.getMessage());
+				logbook.WARN("Restricted Access Attempt! User [" + creds.username() + "] attempted to create account: " + name + ".");
+
+				response.setMessage("Insufficient priviledges to create account.");
 			}
 		}
-		else
+		catch(Exception e)
 		{
-			logbook.INFO("Creating an account with description.");
-
-			Account request = gson.fromJson(body, Account.class);	
-			// Build the variable for passing to the function.
-			request.setName(name);
-
-			try
-			{
-				account = CreateAccount.nameWithDescription(request, org_id, psql, logbook);
-				
-				return gson.toJson(account);
-			}
-			catch(Exception e)
-			{
-				response.setMessage(e.getMessage());
-			}
+			response.setMessage(e.getMessage());
 		}
 
 
@@ -285,6 +324,48 @@ public class TaskManagerAPI
 		{
 			logbook.ERR("Unable to create location. No information available.");
 			response.setMessage("Unable to create location. No information available.");	
+		}
+
+		return gson.toJson(response);
+	}
+
+	@POST
+	@Path("/token")
+	@Consumes("application/json")
+	@Produces("application/json")
+	public String authenticate(String body)
+	{
+		Logger logbook = (Logger) config.getProperty("logger");
+		PostgresConnector psql = (PostgresConnector) config.getProperty("database");
+
+		Gson gson = new Gson();
+
+		ServerResponse response = new ServerResponse();
+
+		logbook.INFO("Servicing request: /token");
+
+		if(body != null)
+		{
+			try
+			{
+				LoginCredential creds = gson.fromJson(body, LoginCredential.class);
+
+				String jwt = GenerateToken.authenticate(creds.username(), creds.password(), creds.organization(), psql, logbook);
+
+				Token token = new Token(jwt);
+
+				return gson.toJson(token);
+			}
+			catch(Exception e)
+			{
+				logbook.ERR(e.getMessage());
+				response.setMessage("Invalid credentials");
+			}
+		}
+		else
+		{
+			logbook.ERR("No credentials present.");
+			response.setMessage("No credentials present");
 		}
 
 		return gson.toJson(response);

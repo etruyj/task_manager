@@ -77,8 +77,6 @@ public class CreateAccount
 	{
 		UUID uuid = UUID.randomUUID();
 
-		logbook.INFO("Creating account: " + name);
-
 		if(isDuplicate(name, org_id, psql, logbook))
 		{
 			throw new Exception("Account [" + name + "] already exists.");
@@ -117,10 +115,8 @@ public class CreateAccount
 
 	public static Account nameWithDescription(Account account, UUID org_id, PostgresConnector psql, Logger logbook) throws Exception
 	{
+		System.err.println("org: " + org_id);
 		UUID account_id = UUID.randomUUID();
-
-		logbook.INFO("Creating account with text: " + account.name());
-
 
 		if(isDuplicate(account.name(), org_id, psql, logbook))
 		{

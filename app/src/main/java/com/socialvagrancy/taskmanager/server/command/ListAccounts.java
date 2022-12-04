@@ -13,10 +13,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class ListAccounts
 {
-	public static ArrayList all(PostgresConnector psql, Logger logbook)
+	public static ArrayList all(String org_id, PostgresConnector psql, Logger logbook)
 	{
 		logbook.INFO("Fetching list of accounts...");
 
@@ -24,12 +25,15 @@ public class ListAccounts
 		Account account;
 	
 		String query = "SELECT name, account.id, text.text FROM account "
-			+ " LEFT JOIN text ON text.id = account.desc_text_id "
+			+ " LEFT JOIN text ON text.id = account.text_id "
+			+ " WHERE account.organization_id=? "
 			+ " ORDER BY account.name DESC;";
 
 		try
 		{
 			PreparedStatement pst = psql.prepare(query, logbook);
+
+			pst.setObject(1, UUID.fromString(org_id));
 
 			ResultSet results = pst.executeQuery();
 
@@ -56,7 +60,7 @@ public class ListAccounts
 		return account_list;
 	}
 	
-	public static ArrayList search(String search, PostgresConnector psql, Logger logbook)
+	public static ArrayList search(String org_id, String search, PostgresConnector psql, Logger logbook)
 	{
 		logbook.INFO("Fetching list of accounts...");
 
@@ -64,8 +68,8 @@ public class ListAccounts
 		Account account;
 	
 		String query = "SELECT name, account.id, text.text FROM account "
-			+ " LEFT JOIN text ON text.id = account.desc_text_id "
-			+ " WHERE name LIKE ? "
+			+ " LEFT JOIN text ON text.id = account.text_id "
+			+ " WHERE name LIKE ? AND account.organization_id=?"
 			+ " ORDER BY account.name DESC;";
 
 		try
@@ -75,6 +79,7 @@ public class ListAccounts
 			search += "%";
 
 			pst.setString(1, search);
+			pst.setObject(2, UUID.fromString(org_id));
 
 			query = pst.toString();
 

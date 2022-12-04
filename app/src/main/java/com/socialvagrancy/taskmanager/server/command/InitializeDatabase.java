@@ -20,8 +20,9 @@ public class InitializeDatabase
 		InitializeLocationTable.createTable(psql, logbook);
 		InitializeContactTable.createTable(psql, logbook);
 		InitializeUserTable.createTable(psql, logbook);
-		InitializeUserOrganizationTable.createTable(psql, logbook);
+		InitializeUserOrganizationTable.createTable(psql, logbook); // Depends on user, organization, contact
 		//InitializeGroupTable.createTable(psql, logbook);
 		//InitializeProjectTable.createTable(psql, logbook);
+		InitializeTokenTable.createTable(psql, logbook); // Depends on user, organization
 	}
 }
