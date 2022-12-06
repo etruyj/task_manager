@@ -40,7 +40,7 @@ public class CreateLocation
 		}
 	}
 
-	public static boolean isDuplicate(String name, UUID account_id, UUID org_id, PostgresConnector psql, Logger logbook)
+	public static boolean isDuplicate(String name, UUID account_id, String org_id, PostgresConnector psql, Logger logbook)
 	{
 		String query = "SELECT id FROM location "
 			+ "WHERE name=? AND account_id=? AND organization_id=?;";
@@ -51,7 +51,7 @@ public class CreateLocation
 
 			pst.setString(1, name);
 			pst.setObject(2, account_id);
-			pst.setObject(3, org_id);
+			pst.setObject(3, UUID.fromString(org_id));
 
 			ResultSet rs = pst.executeQuery();
 
@@ -71,7 +71,7 @@ public class CreateLocation
 		}
 	}
 
-	public static Location withNameOnly(String name, UUID account_id, UUID org_id, PostgresConnector psql, Logger logbook) throws Exception
+	public static Location withNameOnly(String name, UUID account_id, String org_id, PostgresConnector psql, Logger logbook) throws Exception
 	{
 		Location location = new Location();
 
@@ -91,7 +91,7 @@ public class CreateLocation
 		
 	}
 
-	public static Location parseThenCreate(Location location, UUID org_id, PostgresConnector psql, Logger logbook) throws Exception 
+	public static Location parseThenCreate(Location location, String org_id, PostgresConnector psql, Logger logbook) throws Exception 
 	{
 		//===============================
 		// Parse Exceptions
@@ -129,7 +129,7 @@ public class CreateLocation
 			
 			pst.setObject(1, UUID.fromString(location.accountId()));
 			pst.setString(2, location.name());
-			pst.setObject(3, org_id);
+			pst.setObject(3, UUID.fromString(org_id));
 
 			ResultSet rs = pst.executeQuery();
 
@@ -164,7 +164,7 @@ public class CreateLocation
 			location.setNotes(" ");
 		}
 
-		UUID notes_id = AddText.insertNew(location.notes(), org_id, psql, logbook);
+		UUID notes_id = AddText.insertNew(location.notes(), UUID.fromString(org_id), psql, logbook);
 
 		if(notes_id != null)
 		{
@@ -183,7 +183,7 @@ public class CreateLocation
 
 		if(created_location == null)
 		{
-			AddText.deleteText(UUID.fromString(location.notesId()), org_id, psql, logbook);
+			AddText.deleteText(UUID.fromString(location.notesId()), UUID.fromString(org_id), psql, logbook);
 
 			throw new Exception("Unabled to create new location.");
 		}
@@ -191,7 +191,7 @@ public class CreateLocation
 		return created_location;
 	}
 
-	public static Location insertNew(Location location, UUID org_id, PostgresConnector psql, Logger logbook)
+	public static Location insertNew(Location location, String org_id, PostgresConnector psql, Logger logbook)
 	{
 		String query = "INSERT INTO location (id, name, account_id, text_id, building, street_1, street_2, city, state, postal_code, country, active, organization_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
@@ -211,7 +211,7 @@ public class CreateLocation
 			pst.setString(10, location.postalCode());
 		       	pst.setString(11, location.country()); 	
 			pst.setBoolean(12, true);
-			pst.setObject(13, org_id);
+			pst.setObject(13, UUID.fromString(org_id));
 
 			pst.executeUpdate();
 		
@@ -219,7 +219,9 @@ public class CreateLocation
 		}
 		catch(SQLException e)
 		{
-			System.err.println(e.getMessage());
+			// Delete corresponding text to keep the text table clean.
+			AddText.deleteText(UUID.fromString(location.notesId()), UUID.fromString(org_id), psql, logbook);
+
 			logbook.ERR(e.getMessage());
 			logbook.ERR("Failed to put location: " + location.name());
 

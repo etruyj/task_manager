@@ -39,7 +39,7 @@ public class CreateContact
 		}
 	}
 
-	public static Contact withNameOnly(String first_name, String last_name, UUID account_id, UUID location_id, UUID org_id, PostgresConnector psql, Logger logbook) throws Exception
+	public static Contact withNameOnly(String first_name, String last_name, UUID account_id, UUID location_id, String org_id, PostgresConnector psql, Logger logbook) throws Exception
 	{
 		Contact contact = new Contact();
 		
@@ -58,7 +58,7 @@ public class CreateContact
 		}
 	}
 
-	public static Contact parseThenCreate(Contact contact, UUID organization_id, PostgresConnector psql, Logger logbook) throws Exception
+	public static Contact parseThenCreate(Contact contact, String organization_id, PostgresConnector psql, Logger logbook) throws Exception
 	{
 		//===============================
 		// Parse Exceptions
@@ -83,7 +83,7 @@ public class CreateContact
 
 		if(contact.notes() == null)
 		{
-			UUID text_id = AddText.insertNew("", organization_id, psql, logbook);
+			UUID text_id = AddText.insertNew("", UUID.fromString(organization_id), psql, logbook);
 
 			if(text_id != null)
 			{
@@ -115,7 +115,7 @@ public class CreateContact
 		}
 		catch(Exception e)
 		{
-			AddText.deleteText(UUID.fromString(contact.textId()), organization_id, psql, logbook);
+			AddText.deleteText(UUID.fromString(contact.textId()), UUID.fromString(organization_id), psql, logbook);
 
 			logbook.ERR(e.getMessage());
 			logbook.ERR("Unabled to create contact: " + contact.fullName());
@@ -123,7 +123,7 @@ public class CreateContact
 		}
 	}
 
-	public static Contact insertNew(Contact contact, UUID organization_id, PostgresConnector psql, Logger logbook)
+	public static Contact insertNew(Contact contact, String organization_id, PostgresConnector psql, Logger logbook)
 	{
 		String query = "INSERT INTO contact (id, first_name, last_name, phone, email, active, account_id, location_id, text_id, organization_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
@@ -140,7 +140,7 @@ public class CreateContact
 			pst.setObject(7, UUID.fromString(contact.account()));
 			pst.setObject(8, UUID.fromString(contact.location()));
 			pst.setObject(9, UUID.fromString(contact.textId()));
-			pst.setObject(10, organization_id);
+			pst.setObject(10, UUID.fromString(organization_id));
 
 			pst.execute();
 		}

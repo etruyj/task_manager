@@ -14,10 +14,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class ListContacts
 {
-	public static ArrayList<Contact> forAccount(String account, String active_status, PostgresConnector psql, Logger logbook) throws Exception
+	public static ArrayList<Contact> forAccount(String account, String org_id, String active_status, PostgresConnector psql, Logger logbook) throws Exception
 	{
 		logbook.INFO("Fetching list of users associated with account [" + account + "]...");
 
@@ -38,9 +39,10 @@ public class ListContacts
 			throw new Exception("Invalid contact state specified. Must be true or false.");
 		}
 
-		String query = "SELECT contact.id, first_name, last_name, phone, email, active, account_id, location_id, text_id FROM contact "
+		String query = "SELECT contact.id, first_name, last_name, phone, email, active, account_id, location_id, contact.text_id FROM contact "
 			+ "INNER JOIN account ON account.id = contact.account_id "
-			+ "WHERE account.name=? AND active=?;";
+			+ "WHERE account.name=? AND active=? AND contact.organization_id=?"
+			+ "ORDER BY last_name, first_name ASC";
 
 		try
 		{
@@ -48,6 +50,7 @@ public class ListContacts
 
 			pst.setString(1, account);
 			pst.setBoolean(2, state);
+			pst.setObject(3, UUID.fromString(org_id));
 
 			ResultSet rs = pst.executeQuery();
 
@@ -73,7 +76,6 @@ public class ListContacts
 		catch(SQLException e)
 		{
 			logbook.ERR(e.getMessage());
-			logbook.ERR("Unable to retrieve contact information.");
 			
 			throw new Exception("Unable to retrieve contact information.");
 		}

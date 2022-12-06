@@ -202,9 +202,9 @@ public class CreateUser
 				user_id = insertNew(user, pass, psql, logbook);	
 				org_id = CreateOrganization.insertNew(org, psql, logbook);
 				act = CreateAccount.nameOnly(account, org_id, psql, logbook);
-				loc = CreateLocation.withNameOnly(location, UUID.fromString(act.id()), org_id, psql, logbook);
+				loc = CreateLocation.withNameOnly(location, UUID.fromString(act.id()), org_id.toString(), psql, logbook);
 			
-				contact = CreateContact.withNameOnly(first_name, last_name, UUID.fromString(act.id()), UUID.fromString(loc.id()), org_id, psql, logbook);
+				contact = CreateContact.withNameOnly(first_name, last_name, UUID.fromString(act.id()), UUID.fromString(loc.id()), org_id.toString(), psql, logbook);
 			
 				mapToContact(user_id, org_id, UUID.fromString(contact.id()), PermissionLevel.DATABASE_ADMIN, psql, logbook);
 

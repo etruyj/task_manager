@@ -14,15 +14,15 @@ public class InitializeDatabase
 	public static void initializeTables(PostgresConnector psql, Logger logbook)
 	{
 		logbook.INFO("Initializing postgres tables...");
-		InitializeOrganizationTable.createTable(psql, logbook);
-		InitializeTextTable.createTable(psql, logbook);
-		InitializeAccountTable.createTable(psql, logbook);
-		InitializeLocationTable.createTable(psql, logbook);
-		InitializeContactTable.createTable(psql, logbook);
-		InitializeUserTable.createTable(psql, logbook);
+		InitializeOrganizationTable.createTable(psql, logbook); // no dependencies
+		InitializeTextTable.createTable(psql, logbook); // no dependencies
+		InitializeAccountTable.createTable(psql, logbook); // Depends on organization, text table
+		InitializeLocationTable.createTable(psql, logbook); // Depends on account, organization, and text table.
+		InitializeContactTable.createTable(psql, logbook); // Depends on account, location, organization, and text table
+		InitializeUserTable.createTable(psql, logbook); // No dependencies
+		InitializeProjectTable.createTable(psql, logbook); // Depends on account, location, organization, and text table.
 		InitializeUserOrganizationTable.createTable(psql, logbook); // Depends on user, organization, contact
 		//InitializeGroupTable.createTable(psql, logbook);
-		//InitializeProjectTable.createTable(psql, logbook);
 		InitializeTokenTable.createTable(psql, logbook); // Depends on user, organization
 	}
 }

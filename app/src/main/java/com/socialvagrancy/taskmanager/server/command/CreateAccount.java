@@ -115,7 +115,6 @@ public class CreateAccount
 
 	public static Account nameWithDescription(Account account, UUID org_id, PostgresConnector psql, Logger logbook) throws Exception
 	{
-		System.err.println("org: " + org_id);
 		UUID account_id = UUID.randomUUID();
 
 		if(isDuplicate(account.name(), org_id, psql, logbook))

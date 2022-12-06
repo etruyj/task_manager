@@ -14,19 +14,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class ListLocations
 {
-	public static ArrayList byStatus(String account_name, boolean active_state, PostgresConnector psql, Logger logbook)
+	public static ArrayList byStatus(String account_name, String org_id, boolean active_state, PostgresConnector psql, Logger logbook) throws Exception
 	{
 		logbook.INFO("Fetching list of locations associated with account [" + account_name + "]...");
 
 		ArrayList<Location> location_list = new ArrayList<Location>();
 		Location location;
 
-		String query = "SELECT location.id, location.name, building, street_1, street_2, city, state, postal_code, country, notes_text_id FROM location "
+		String query = "SELECT location.id, location.name, building, street_1, street_2, city, state, postal_code, country, location.text_id FROM location "
 			+ "INNER JOIN account ON account.id = location.account_id "
-			+ "WHERE account.name=? AND active=?;";
+			+ "WHERE account.name=? AND active=? AND location.organization_id=?;";
 
 		try
 		{
@@ -34,6 +35,7 @@ public class ListLocations
 
 			pst.setString(1, account_name);
 			pst.setBoolean(2, active_state);
+			pst.setObject(3, UUID.fromString(org_id));
 
 			ResultSet results = pst.executeQuery();
 
@@ -53,14 +55,15 @@ public class ListLocations
 				location.setNotesId(results.getString(10));
 
 				location_list.add(location);
+		
 			}
 		}
 		catch(SQLException e)
 		{
 			logbook.ERR(e.getMessage());
-			logbook.ERR("Failed to retrieve list of locations for account.");
+			throw new Exception("Failed to retrieve list of locations for account.");
 		}
-
+		
 		return location_list;
 	}
 }

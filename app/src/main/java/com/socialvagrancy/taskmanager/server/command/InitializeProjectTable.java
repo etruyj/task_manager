@@ -20,10 +20,13 @@ public class InitializeProjectTable
 			+ "name VARCHAR NOT NULL, "
 			+ "account_id UUID, "
 			+ "location_id UUID, "
-			+ "desc_text_id UUID, "
+			+ "organization_id UUID, "
+			+ "text_id UUID, "
+			+ "active boolean, "
 			+ "FOREIGN KEY (account_id) REFERENCES account (id), "
 			+ "FOREIGN KEY (location_id) REFERENCES location (id), "
-			+ "FOREIGN KEY (desc_text_id) REFERENCES text (id));";
+			+ "FOREIGN KEY (organization_id) REFERENCES organization (id), "
+			+ "FOREIGN KEY (text_id) REFERENCES text (id));";
 
 		if(!psql.update(query, logbook))
 		{

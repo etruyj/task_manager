@@ -21,7 +21,7 @@ public enum PermissionLevel
 	private PermissionLevel(int priv) { this.level = priv; }
 	public int level() { return level; }
 
-	public boolean checkPermission(PermissionLevel toCheck)
+	public boolean checkPermissions(PermissionLevel toCheck)
 	{
 		if(toCheck.level() >= this.level)
 		{

@@ -72,7 +72,6 @@ public class ValidateToken
 			}
 			else
 			{
-				System.err.println("QUERY: " + query);
 				throw new Exception("Invalid token used to access the client.");
 			}
 		}

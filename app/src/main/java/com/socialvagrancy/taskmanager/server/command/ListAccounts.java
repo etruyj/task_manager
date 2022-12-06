@@ -24,10 +24,9 @@ public class ListAccounts
 		ArrayList<Account> account_list = new ArrayList<Account>();
 		Account account;
 	
-		String query = "SELECT name, account.id, text.text FROM account "
-			+ " LEFT JOIN text ON text.id = account.text_id "
+		String query = "SELECT name, account.id, text_id FROM account "
 			+ " WHERE account.organization_id=? "
-			+ " ORDER BY account.name DESC;";
+			+ " ORDER BY account.name ASC;";
 
 		try
 		{
@@ -67,10 +66,9 @@ public class ListAccounts
 		ArrayList<Account> account_list = new ArrayList<Account>();
 		Account account;
 	
-		String query = "SELECT name, account.id, text.text FROM account "
-			+ " LEFT JOIN text ON text.id = account.text_id "
+		String query = "SELECT name, account.id, text_id FROM account "
 			+ " WHERE name LIKE ? AND account.organization_id=?"
-			+ " ORDER BY account.name DESC;";
+			+ " ORDER BY account.name ASC;";
 
 		try
 		{
