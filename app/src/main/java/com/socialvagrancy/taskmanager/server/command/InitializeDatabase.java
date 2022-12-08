@@ -22,6 +22,7 @@ public class InitializeDatabase
 		InitializeUserTable.createTable(psql, logbook); // No dependencies
 		InitializeProjectTable.createTable(psql, logbook); // Depends on account, location, organization, and text table.
 		InitializeUserOrganizationTable.createTable(psql, logbook); // Depends on user, organization, contact
+		InitializeTaskTable.createTable(psql, logbook); // Depends on text, org, account, location, project, contact
 		//InitializeGroupTable.createTable(psql, logbook);
 		InitializeTokenTable.createTable(psql, logbook); // Depends on user, organization
 	}

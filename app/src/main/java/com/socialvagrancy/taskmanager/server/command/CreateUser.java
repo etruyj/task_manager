@@ -20,6 +20,7 @@ import java.lang.StringBuilder;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Random;
 import java.util.UUID;
 
@@ -83,7 +84,6 @@ public class CreateUser
 		}
 		catch(SQLException e)
 		{
-			System.err.println(e.getMessage());
 			logbook.ERR(e.getMessage());
 			throw new Exception("Could not create user [" + username + "].");
 		}
@@ -108,7 +108,7 @@ public class CreateUser
 			pst.setObject(2, user_id);
 			pst.setObject(3, organization_id);
 			pst.setObject(4, contact_id);
-			pst.setObject(5, permission_level);
+			pst.setObject(5, permission_level, Types.OTHER);
 
 			pst.executeUpdate();
 		}

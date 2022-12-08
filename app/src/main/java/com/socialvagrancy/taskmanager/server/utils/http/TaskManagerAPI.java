@@ -30,11 +30,13 @@ import com.socialvagrancy.taskmanager.server.command.CreateAccount;
 import com.socialvagrancy.taskmanager.server.command.CreateContact;
 import com.socialvagrancy.taskmanager.server.command.CreateLocation;
 import com.socialvagrancy.taskmanager.server.command.CreateProject;
+import com.socialvagrancy.taskmanager.server.command.CreateTask;
 import com.socialvagrancy.taskmanager.server.command.GenerateToken;
 import com.socialvagrancy.taskmanager.server.command.ListAccounts;
 import com.socialvagrancy.taskmanager.server.command.ListContacts;
 import com.socialvagrancy.taskmanager.server.command.ListLocations;
 import com.socialvagrancy.taskmanager.server.command.ListProjects;
+import com.socialvagrancy.taskmanager.server.command.ListTasks;
 import com.socialvagrancy.taskmanager.server.command.ValidateToken;
 import com.socialvagrancy.taskmanager.server.utils.database.PostgresConnector;
 import com.socialvagrancy.taskmanager.structure.Account;
@@ -43,6 +45,7 @@ import com.socialvagrancy.taskmanager.structure.Location;
 import com.socialvagrancy.taskmanager.structure.LoginCredential;
 import com.socialvagrancy.taskmanager.structure.Project;
 import com.socialvagrancy.taskmanager.structure.ServerResponse;
+import com.socialvagrancy.taskmanager.structure.Task;
 import com.socialvagrancy.taskmanager.structure.Token;
 import com.socialvagrancy.taskmanager.structure.server.Credential;
 import com.socialvagrancy.taskmanager.structure.server.PermissionLevel;
@@ -489,6 +492,109 @@ public class TaskManagerAPI
 		{
 			logbook.ERR("Unable to create project. No information available.");
 			response.setMessage("Unabled to create project. No information available.");
+		}
+
+		return gson.toJson(response);
+	}
+
+	@PUT
+	@Path("/account/{account}/task")
+	@Consumes("application/json")
+	@Produces("application/json")
+	public String createTask(@PathParam("account") String account_name, @HeaderParam("Authorization") String auth_token, String body)
+	{
+		Logger logbook = (Logger) config.getProperty("logger");
+		PostgresConnector psql = (PostgresConnector) config.getProperty("database");
+		Gson gson = new Gson();
+
+		ServerResponse response = new ServerResponse();
+		PermissionLevel min_required = PermissionLevel.ACCOUNT_USER;
+
+		logbook.INFO("Servicing request: PUT /account/" + account_name + "/task");
+
+		if(body != null)
+		{
+			try
+			{
+				Credential creds = ValidateToken.generateCredentials(auth_token, psql, logbook);
+
+				if(min_required.checkPermissions(creds.permissions()))
+				{
+					Task task = gson.fromJson(body, Task.class);
+
+					task = CreateTask.parseThenCreate(task, creds.organization(), psql, logbook);
+
+					return gson.toJson(task);
+				}
+				else
+				{
+					logbook.WARN("Restricted Access Attempt! User [" + creds.username() + "] attempted to create a task for account: " + account_name);
+					response.setMessage("Insufficient privileges to create task.");
+				}
+			}
+			catch(Exception e)
+			{
+				logbook.ERR(e.getMessage());
+				response.setMessage("Failed to create task");
+			}
+		}
+		else
+		{
+			logbook.ERR("Unable to create task. No information available.");
+			response.setMessage("Unable to create task. No information available.");
+		}
+
+		return gson.toJson(response);
+	}
+
+	@GET
+	@Path("/tasks")
+	@Consumes("application/json")
+	@Produces("application/json")
+	public String listTasks(@QueryParam("assignedTo") String contact_id, @QueryParam("date") String date, @HeaderParam("Authorization") String auth_token)
+	{
+		Logger logbook = (Logger) config.getProperty("logger");
+		PostgresConnector psql = (PostgresConnector) config.getProperty("database");
+
+		Gson gson = new Gson();
+		ServerResponse response = new ServerResponse();
+		PermissionLevel min_required = PermissionLevel.ACCOUNT_USER;
+
+		logbook.INFO("Servicing request: GET /tasks");
+
+		ArrayList<Task> task_list;
+		
+		if(contact_id != null && date != null)
+		{
+			try
+			{
+				Credential creds = ValidateToken.generateCredentials(auth_token, psql, logbook);
+
+				if(min_required.checkPermissions(creds.permissions()))
+				{
+					// List tasks for user by date
+					task_list = ListTasks.byStatus(contact_id, date, creds.organization(), psql, logbook);
+
+					logbook.INFO("Found (" + task_list.size() + ") tasks.");
+					
+					return gson.toJson(task_list);
+				}
+				else
+				{
+					logbook.WARN("Restricted Access Attempt! User [" + creds.username() + "] attempted to list tasks.");
+					response.setMessage("Insufficient privileges to list tasks.");
+				}
+			}
+			catch(Exception e)
+			{
+				logbook.ERR(e.getMessage());
+				response.setMessage("Failed to retrieve tasks.");
+			}
+		}
+		else
+		{
+			logbook.ERR("Unable to list tasks. Not enough information specified.");
+			response.setMessage("Unable to list tasks. Not enough information specified.");
 		}
 
 		return gson.toJson(response);
