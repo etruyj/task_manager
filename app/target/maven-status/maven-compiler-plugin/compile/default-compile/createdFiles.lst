@@ -26,6 +26,7 @@ com/socialvagrancy/taskmanager/structure/ServerResponse.class
 com/socialvagrancy/taskmanager/server/command/InitializeAccountTable.class
 com/socialvagrancy/taskmanager/structure/LoginCredential.class
 com/socialvagrancy/taskmanager/server/command/ListContacts.class
+com/socialvagrancy/taskmanager/server/command/UpdateLocation.class
 com/socialvagrancy/taskmanager/server/command/CreateContact.class
 com/socialvagrancy/taskmanager/structure/Project.class
 com/socialvagrancy/taskmanager/server/command/InitializeTextTable.class
@@ -47,4 +48,5 @@ com/socialvagrancy/taskmanager/server/command/CreateAccount.class
 com/socialvagrancy/taskmanager/server/utils/http/TaskManagerAPI.class
 com/socialvagrancy/taskmanager/server/command/ListTasks.class
 com/socialvagrancy/taskmanager/server/utils/security/AccessToken.class
+com/socialvagrancy/taskmanager/server/command/UpdateAccount.class
 com/socialvagrancy/taskmanager/structure/TaskStatus.class

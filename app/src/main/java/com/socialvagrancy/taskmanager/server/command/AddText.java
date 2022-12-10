@@ -11,6 +11,7 @@ import com.socialvagrancy.taskmanager.server.utils.database.PostgresConnector;
 import com.socialvagrancy.utils.Logger;
 
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.UUID;
 
 public class AddText
@@ -73,5 +74,36 @@ public class AddText
 		}
 
 		
+	}
+
+	public static UUID updateText(String text, UUID text_id, UUID org_id, PostgresConnector psql, Logger logbook) throws Exception
+	{
+		if(text_id == null)
+		{
+			return insertNew(text, org_id, psql, logbook);	
+		}
+		else
+		{
+			String query = "UPDATE text SET text=? "
+			       		+ "WHERE id=? AND organization_id=?;";
+
+			try
+			{
+				PreparedStatement pst = psql.prepare(query, logbook);
+
+				pst.setString(1, text);
+				pst.setObject(2, text_id);
+				pst.setObject(3, org_id);
+
+				pst.executeUpdate();
+
+				return text_id;
+			}	
+			catch(SQLException e)
+			{
+				logbook.ERR(e.getMessage());
+				throw new Exception("Unable to add text to text table.");
+			}
+		}
 	}
 }

@@ -37,6 +37,8 @@ import com.socialvagrancy.taskmanager.server.command.ListContacts;
 import com.socialvagrancy.taskmanager.server.command.ListLocations;
 import com.socialvagrancy.taskmanager.server.command.ListProjects;
 import com.socialvagrancy.taskmanager.server.command.ListTasks;
+import com.socialvagrancy.taskmanager.server.command.UpdateAccount;
+import com.socialvagrancy.taskmanager.server.command.UpdateLocation;
 import com.socialvagrancy.taskmanager.server.command.ValidateToken;
 import com.socialvagrancy.taskmanager.server.utils.database.PostgresConnector;
 import com.socialvagrancy.taskmanager.structure.Account;
@@ -109,7 +111,7 @@ public class TaskManagerAPI
 			{
 				logbook.WARN("Restricted Access Attempt! User [" + creds.username() + "] attempted to access resource (/accounts).");
 
-				response.setMessage("Insufficient priviledges to access accounts.");
+				response.setMessage("Insufficient privileges to access accounts.");
 			}
 		}
 		catch(Exception e)
@@ -120,6 +122,48 @@ public class TaskManagerAPI
 
 		}
 		
+		return gson.toJson(response);
+	}
+
+	@POST
+	@Path("/account")
+	@Consumes("application/json")
+	@Produces("application/json")
+	public String updateAccount(@HeaderParam("Authorization") String auth_token, String body)
+	{
+		Logger logbook = (Logger) config.getProperty("logger");
+		PostgresConnector psql = (PostgresConnector) config.getProperty("database");
+
+		ServerResponse response = new ServerResponse();
+		Gson gson = new Gson();
+		PermissionLevel min_required = PermissionLevel.ACCOUNT_ADMIN;
+
+		logbook.INFO("Servicing requests: POST /account");
+
+		try
+		{
+			Credential creds = ValidateToken.generateCredentials(auth_token, psql, logbook);
+
+			if(min_required.checkPermissions(creds.permissions()))
+			{
+				Account account = gson.fromJson(body, Account.class);
+
+				account = UpdateAccount.byUUID(account, creds.organization(), psql, logbook);
+
+				return gson.toJson(account);
+			}
+			else
+			{
+				logbook.WARN("Restricted Access Attempt! User [" + creds.username() + "] attempted to update resource (/account)");
+				response.setMessage("Insufficient privileges to update account.");
+			}
+		}
+		catch(Exception e)
+		{
+			logbook.ERR(e.getMessage());
+			response.setMessage("Unable to update account.");
+		}
+
 		return gson.toJson(response);
 	}
 
@@ -170,7 +214,7 @@ public class TaskManagerAPI
 			{
 				logbook.WARN("Restricted Access Attempt! User [" + creds.username() + "] attempted to create account: " + name + ".");
 
-				response.setMessage("Insufficient priviledges to create account.");
+				response.setMessage("Insufficient privileges to create account.");
 			}
 		}
 		catch(Exception e)
@@ -223,7 +267,7 @@ public class TaskManagerAPI
 			{
 				logbook.WARN("Restricted Access Attempt! User [" + creds.username() + "] attempted to lists contacts for account: " + account_name);
 
-				response.setMessage("Insufficient priviledges to create account.");
+				response.setMessage("Insufficient privileges to create account.");
 			}
 		}
 		catch(Exception e)
@@ -269,7 +313,7 @@ public class TaskManagerAPI
 				{
 					logbook.WARN("Restricted Access Attempt! User [" + creds.username() + "] attempted to create user [" + contact.fullName() + "] account: " + account_name + ".");
 
-					response.setMessage("Insufficient priviledges to create user.");
+					response.setMessage("Insufficient privileges to create user.");
 				}
 
 			}
@@ -338,7 +382,7 @@ public class TaskManagerAPI
 			{
 				logbook.WARN("Restricted Access Attempt! User [" + creds.username() + "] attempted to list locations for account: " + account_name + ".");
 
-				response.setMessage("Insufficient priviledges to list locations.");
+				response.setMessage("Insufficient privileges to list locations.");
 			}
 		}
 		catch(Exception e)
@@ -346,6 +390,48 @@ public class TaskManagerAPI
 			logbook.ERR(e.getMessage());
 			response.setMessage("Failed to retrieve locations for account: " + account_name);
 
+		}
+
+		return gson.toJson(response);
+	}
+
+	@POST
+	@Path("/account/{account}/location")
+	@Consumes("application/json")
+	@Produces("application/json")
+	public String updateLocation(@PathParam("account") String account_name, @HeaderParam("Authorization") String auth_token, String body)
+	{
+		Logger logbook = (Logger) config.getProperty("logger");
+		PostgresConnector psql = (PostgresConnector) config.getProperty("database");
+
+		ServerResponse response = new ServerResponse();
+		Gson gson = new Gson();
+		PermissionLevel min_required = PermissionLevel.ACCOUNT_ADMIN;
+
+		logbook.INFO("Servicing requests: POST /account/" + account_name + "/location");
+
+		try
+		{
+			Credential creds = ValidateToken.generateCredentials(auth_token, psql, logbook);
+
+			if(min_required.checkPermissions(creds.permissions()))
+			{
+				Location location = gson.fromJson(body, Location.class);
+
+				location = UpdateLocation.byUUID(location, creds.organization(), psql, logbook);
+
+				return gson.toJson(location);
+			}
+			else
+			{
+				logbook.WARN("Restricted Access Attempt! User [" + creds.username() + "] attempted to update resource (/account/" + account_name + "/location)");
+				response.setMessage("Insufficient privileges to update location.");
+			}
+		}
+		catch(Exception e)
+		{
+			logbook.ERR(e.getMessage());
+			response.setMessage("Unable to update location.");
 		}
 
 		return gson.toJson(response);
@@ -385,7 +471,7 @@ public class TaskManagerAPI
 				{
 					logbook.WARN("Restricted Access Attempt! User [" + creds.username() + "] attempted to create location [" + name + "] for account: " + account_name + ".");
 
-					response.setMessage("Insufficient privile ges to create locations.");
+					response.setMessage("Insufficient privileges to create locations.");
 				}
 			}
 			catch(Exception e)
@@ -479,7 +565,7 @@ public class TaskManagerAPI
 				{
 					logbook.WARN("Restricted Access Attempt! User [" + creds.username() + "] attempted to create project [" + account_name + ":" + project_name + "]");
 
-					response.setMessage("Insufficient priviledges to create project.");
+					response.setMessage("Insufficient privileges to create project.");
 				}
 			}
 			catch(Exception e)
