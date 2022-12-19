@@ -28,7 +28,7 @@ public class ListTasks
 		ArrayList<Task> task_list = new ArrayList<Task>();
 		Task task;
 
-		String query = "SELECT id, subject, text_id, status, start_time, duration, account_id, location_id, project_id FROM task "
+		String query = "SELECT id, subject, text_id, status, start_time, duration, account_id, location_id, project_id, contact_id FROM task "
 		       		+ "WHERE contact_id=? AND organization_id=? AND start_time>=? AND start_time<=?"
 				+ "ORDER BY start_time ASC;";
 
@@ -58,7 +58,8 @@ public class ListTasks
 					.setDuration(rs.getInt(6))
 					.setAccountId(rs.getString(7))
 					.setLocationId(rs.getString(8))
-					.setProjectId(rs.getString(9));
+					.setProjectId(rs.getString(9))
+					.setContactId(rs.getString(10));
 
 				task_list.add(task);
 			}

@@ -38,7 +38,9 @@ import com.socialvagrancy.taskmanager.server.command.ListLocations;
 import com.socialvagrancy.taskmanager.server.command.ListProjects;
 import com.socialvagrancy.taskmanager.server.command.ListTasks;
 import com.socialvagrancy.taskmanager.server.command.UpdateAccount;
+import com.socialvagrancy.taskmanager.server.command.UpdateContact;
 import com.socialvagrancy.taskmanager.server.command.UpdateLocation;
+import com.socialvagrancy.taskmanager.server.command.UpdateTask;
 import com.socialvagrancy.taskmanager.server.command.ValidateToken;
 import com.socialvagrancy.taskmanager.server.utils.database.PostgresConnector;
 import com.socialvagrancy.taskmanager.structure.Account;
@@ -64,6 +66,7 @@ public class TaskManagerAPI
 
 	@GET
 	@Path("/test")
+	@Consumes("application/json")
 	@Produces("application/json")
 	public String test()
 	{
@@ -279,6 +282,47 @@ public class TaskManagerAPI
 		return gson.toJson(response);
 	}
 
+	@POST
+	@Path("/account/{account}/contact")
+	@Consumes("application/json")
+	@Produces("application/json")
+	public String updateContact(@PathParam("name") String account_name, @HeaderParam("Authorization") String auth_token, String body)
+	{
+		Logger logbook = (Logger) config.getProperty("logger");
+		PostgresConnector psql = (PostgresConnector) config.getProperty("database");
+
+		Gson gson = new Gson();
+		ServerResponse response = new ServerResponse();
+		PermissionLevel min_required = PermissionLevel.ACCOUNT_USER;
+
+		logbook.INFO("Servicing request: POST /account/" + account_name + "/contact");
+
+		try
+		{
+			Credential creds = ValidateToken.generateCredentials(auth_token, psql, logbook);
+
+			if(min_required.checkPermissions(creds.permissions()))
+			{
+				Contact contact = gson.fromJson(body, Contact.class);
+
+				contact = UpdateContact.byUUID(contact, creds.organization(), psql, logbook);
+
+				return gson.toJson(contact);
+			}
+			else
+			{
+				logbook.WARN("Restricted Access Attempt! User[" + creds.username() + "] attempted to update contact for account: " + creds.organization() + ":" + account_name);
+				response.setMessage("Insufficient privileges to update contact.");
+			}
+		}
+		catch(Exception e)
+		{
+			logbook.ERR(e.getMessage());
+			response.setMessage("Unable to update contact.");
+		}
+
+		return gson.toJson(response);
+	}
 
 	@PUT
 	@Path("/account/{account}/contact/")
@@ -578,6 +622,48 @@ public class TaskManagerAPI
 		{
 			logbook.ERR("Unable to create project. No information available.");
 			response.setMessage("Unabled to create project. No information available.");
+		}
+
+		return gson.toJson(response);
+	}
+
+	@POST
+	@Path("/account/{account}/task/")
+	@Consumes("application/json")
+	@Produces("application/json")
+	public String updateTask(@PathParam("name") String account_name, @HeaderParam("Authorization") String auth_token, String body)
+	{
+		Logger logbook = (Logger) config.getProperty("logger");
+		PostgresConnector psql = (PostgresConnector) config.getProperty("database");
+
+		Gson gson = new Gson();
+		ServerResponse response = new ServerResponse();
+		PermissionLevel min_required = PermissionLevel.ACCOUNT_USER;
+
+		logbook.INFO("Servicing request: POST /account/" + account_name + "/task");
+
+		try
+		{
+			Credential creds = ValidateToken.generateCredentials(auth_token, psql, logbook);
+
+			if(min_required.checkPermissions(creds.permissions()))
+			{
+				Task task = gson.fromJson(body, Task.class);
+
+				task = UpdateTask.byUUID(task, creds.organization(), psql, logbook);
+
+				return gson.toJson(task);
+			}
+			else
+			{
+				logbook.WARN("Restricted Access Attempt! User[" + creds.username() + "] attempted to update task for account: " + creds.organization() + ":" + account_name);
+				response.setMessage("Insufficient privileges to update task.");
+			}
+		}
+		catch(Exception e)
+		{
+			logbook.ERR(e.getMessage());
+			response.setMessage("Unable to update task.");
 		}
 
 		return gson.toJson(response);

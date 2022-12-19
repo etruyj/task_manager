@@ -52,7 +52,7 @@ public class InitializeTaskTable
 				+ "id UUID PRIMARY KEY, "
 				+ "subject VARCHAR NOT NULL, "
 				+ "text_id UUID, "
-				+ "start_time TIMESTAMP WITH TIME ZONE NOT NULL, "
+				+ "start_time TIMESTAMP WITHOUT	TIME ZONE NOT NULL, "
 				+ "duration INT NOT NULL, "
 				+ "status task_status, "
 				+ "contact_id UUID NOT NULL, "
