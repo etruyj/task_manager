@@ -4,6 +4,9 @@
  */
 package com.socialvagrancy.taskmanager.client.ui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 /**
  *
  * @author seans
@@ -15,6 +18,9 @@ public class Login extends javax.swing.JPanel {
      */
     public Login() {
         initComponents();
+        
+        // Other functions that must be called are setApiController()
+        // and attachToClient()
     }
 
     /**
@@ -40,9 +46,14 @@ public class Login extends javax.swing.JPanel {
             }
         });
 
-        org_dropdown.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        org_dropdown.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 4", "dev" }));
 
         login_button.setText("Login");
+        login_button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                login_buttonActionPerformed(evt);
+            }
+        });
 
         username_label.setText("Username:");
 
@@ -89,10 +100,45 @@ public class Login extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    public void attachToClient(ActionListener client)
+    {
+
+        screen_listener = client;
+    }
+    
+    public void setApiController(Controller api)
+    {
+        api_controller = api;
+    }
+    
     private void password_fieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_password_fieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_password_fieldActionPerformed
 
+    private void login_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_login_buttonActionPerformed
+        // Action to be performed once the button is clicked.
+        
+        String username = username_field.getText();
+        char[] password = password_field.getPassword();
+        String organization = org_dropdown.getSelectedItem().toString();
+        
+        try
+        {
+            if(api_controller.login(username, password, organization))
+            {
+                ActionEvent e = new ActionEvent(login_button, 0, "LOGIN_SUCCESSFUL");
+                
+                screen_listener.actionPerformed(e);
+            }
+        }
+        catch(Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
+        
+    }//GEN-LAST:event_login_buttonActionPerformed
+
+   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton login_button;
@@ -103,4 +149,8 @@ public class Login extends javax.swing.JPanel {
     private javax.swing.JTextField username_field;
     private javax.swing.JLabel username_label;
     // End of variables declaration//GEN-END:variables
+
+    private Controller api_controller;
+    private ActionListener screen_listener;
+    
 }

@@ -5,6 +5,8 @@
 package com.socialvagrancy.taskmanager.client.ui;
 
 import java.awt.CardLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  *
@@ -15,25 +17,11 @@ public class Client extends javax.swing.JFrame {
     /**
      * Creates new form Client
      */
-    public Client() {
+    public Client(String base_url, boolean ignore_ssl, String log_path, int log_level, int log_size, int log_count) {
         initComponents();
         // The custom secondary components we're loading.
         // Add the other screens (panes)
-        javax.swing.JPanel test = new javax.swing.JPanel();
-        javax.swing.JLabel test_label = new javax.swing.JLabel();
-        
-        test_label.setText("TEST");
-        test.add(test_label);
-
-        screens = new javax.swing.JPanel(new CardLayout());
-        login_pane = new Login();
-        screens.add(login_pane);
-        
-        display_pane.add(screens);
-        
-        showScreen("LOGIN");
-        
-        refresh();
+        initializeClient(base_url, ignore_ssl, log_path, log_level, log_size, log_count);
     }
 
     /**
@@ -48,14 +36,33 @@ public class Client extends javax.swing.JFrame {
         display_pane = new javax.swing.JPanel();
         menu_bar = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        properties_option = new javax.swing.JMenuItem();
+        logout_option = new javax.swing.JMenuItem();
+        quit_option = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(400, 500));
 
         display_pane.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         display_pane.setLayout(new java.awt.CardLayout());
 
         jMenu1.setText("File");
+
+        properties_option.setText("Properties");
+        jMenu1.add(properties_option);
+
+        logout_option.setText("Logout");
+        jMenu1.add(logout_option);
+
+        quit_option.setText("Quit");
+        quit_option.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                quit_optionActionPerformed(evt);
+            }
+        });
+        jMenu1.add(quit_option);
+
         menu_bar.add(jMenu1);
 
         jMenu2.setText("Edit");
@@ -69,19 +76,83 @@ public class Client extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(display_pane, javax.swing.GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
+                .addComponent(display_pane, javax.swing.GroupLayout.PREFERRED_SIZE, 390, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(display_pane, javax.swing.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
+                .addComponent(display_pane, javax.swing.GroupLayout.PREFERRED_SIZE, 465, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    private void attachPanes()
+    {
+        // Initialize the Listener and add them to the different panes
+        screen_listener = new ActionListener() {;
+                public void actionPerformed(ActionEvent e)
+                {
+                    processButtonActions(e.getActionCommand());
+                }
+        };
+        
+        login_pane.attachToClient(screen_listener);
+    }
+    
+    private void initializeClient(String base_url, boolean ignore_ssl, String log_path, int log_level, int log_size, int log_count)
+    {
+        api_controller = new Controller(base_url, ignore_ssl, log_path, log_level, log_size, log_count);
+        logged_in = false;
+        
+        screens = new javax.swing.JPanel(new CardLayout());
+        account_details_pane = new AccountDetails();
+        account_search_pane = new AccountSearch();
+        config_pane = new Configuration();
+        login_pane = new Login();
+        task_details_pane = new TaskDetails();
+        task_list_pane = new TaskList();
+        
+        login_pane.setApiController(api_controller);
+        
+        attachPanes();
+        
+        screens.add(account_details_pane, "ACCOUNT_DETAILS");
+        screens.add(account_search_pane, "ACCOUNT_SEARCH");
+        screens.add(config_pane, "CONFIGURATION");
+        screens.add(login_pane, "LOGIN");
+        screens.add(task_details_pane, "TASK_DETAILS");
+        screens.add(task_list_pane, "TASK_LIST");
+        
+        display_pane.add(screens);
+  
+        refresh();        
+        showScreen("LOGIN");
+
+    }
+    
+    private void processButtonActions(String command)
+    {
+        // Process the signals emitted by the buttons on different 
+        // screens in order to switch screens to the desired new one.
+        switch (command)
+        {
+                case "LOGIN_SUCCESSFUL":
+                    logged_in = true;
+                    showScreen("TASK_LIST");
+                    break;
+                case "LOGOUT":
+                    logged_in = false;
+                    showScreen("LOGIN");
+                    break;
+        }
+    }
+    
+    private void quit_optionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quit_optionActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_quit_optionActionPerformed
 
     private void refresh()
     {
@@ -93,9 +164,21 @@ public class Client extends javax.swing.JFrame {
     {
         CardLayout layout = new CardLayout();
         layout = (CardLayout) screens.getLayout();
-        layout.show(screens, screen);
+     
+        if(!logged_in)
+        {
+            // Reset to login screen if not logged in.
+            layout.show(screens, "LOGIN");
+        }    
+        else
+        {
+            layout.show(screens, screen);
+        }
+        
+        refresh();
     }
     
+
     /**
      * @param args the command line arguments
      */
@@ -122,11 +205,18 @@ public class Client extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(Client.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+        
+        boolean ignore_ssl = false;
+        String url = "http://192.168.2.25:5050/sv/";
+        String log_path = "client_log.txt";
+        int log_level = 1;
+        int log_size = 10240;
+        int log_count = 3;
+        
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Client().setVisible(true);
+                new Client(url, ignore_ssl, log_path, log_level, log_size, log_count).setVisible(true);
             }
         });
     }
@@ -135,9 +225,25 @@ public class Client extends javax.swing.JFrame {
     private javax.swing.JPanel display_pane;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuItem logout_option;
     private javax.swing.JMenuBar menu_bar;
+    private javax.swing.JMenuItem properties_option;
+    private javax.swing.JMenuItem quit_option;
     // End of variables declaration//GEN-END:variables
+    
+    // Import External Components
     private javax.swing.JPanel screens;
+    private AccountDetails account_details_pane;
+    private AccountSearch account_search_pane;
+    private Configuration config_pane;
     private Login login_pane;
+    private TaskDetails task_details_pane;
+    private TaskList task_list_pane;
+    
+    
+    // Config Paremeters
+    private ActionListener screen_listener;
+    private boolean logged_in;
+    private Controller api_controller;
     
 }
