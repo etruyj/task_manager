@@ -4,6 +4,8 @@
  */
 package com.socialvagrancy.taskmanager.client.ui;
 
+import com.socialvagrancy.taskmanager.client.command.GetTasks;
+import com.socialvagrancy.taskmanager.client.ui.Controller;
 import com.socialvagrancy.taskmanager.structure.Task;
 import java.util.ArrayList;
 
@@ -161,9 +163,16 @@ public class TaskList extends javax.swing.JPanel implements Screen {
     @Override
     public void refresh(String id)
     {
-        
+        // Ignore the ID code
+        ArrayList<Task> task_list = api_controller.getTasks(task_date_picker.toString());
     }
 
+    @Override
+    public void setApiController(Controller api)
+    {
+        api_controller = api;
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel date_label;
     private javax.swing.JPanel jPanel2;
@@ -177,4 +186,6 @@ public class TaskList extends javax.swing.JPanel implements Screen {
     private com.github.lgooddatepicker.components.DatePicker task_date_picker;
     private javax.swing.JTextArea task_list;
     // End of variables declaration//GEN-END:variables
+
+    private Controller api_controller;
 }

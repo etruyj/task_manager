@@ -637,7 +637,7 @@ public class TaskManagerAPI
 	@Path("/tasks")
 	@Consumes("application/json")
 	@Produces("application/json")
-	public String listTasks(@QueryParam("assignedTo") String contact_id, @QueryParam("date") String date, @HeaderParam("Authorization") String auth_token)
+	public String listTasks(@QueryParam("assignedTo") String contact_id, @QueryParam("start") String range_start, @QueryParam("end") String range_end, @HeaderParam("Authorization") String auth_token)
 	{
 		Logger logbook = (Logger) config.getProperty("logger");
 		PostgresConnector psql = (PostgresConnector) config.getProperty("database");
@@ -650,7 +650,7 @@ public class TaskManagerAPI
 
 		ArrayList<Task> task_list;
 		
-		if(contact_id != null && date != null)
+		if(contact_id != null && range_start != null && range_end != null)
 		{
 			try
 			{
@@ -659,7 +659,7 @@ public class TaskManagerAPI
 				if(min_required.checkPermissions(creds.permissions()))
 				{
 					// List tasks for user by date
-					task_list = ListTasks.byStatus(contact_id, date, creds.organization(), psql, logbook);
+					task_list = ListTasks.byStatus(contact_id, range_start, range_end, creds.organization(), psql, logbook);
 
 					logbook.INFO("Found (" + task_list.size() + ") tasks.");
 					

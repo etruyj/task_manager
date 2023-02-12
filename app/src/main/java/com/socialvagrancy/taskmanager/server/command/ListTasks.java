@@ -21,9 +21,9 @@ import java.util.UUID;
 
 public class ListTasks
 {
-	public static ArrayList<Task> byStatus(String contact_id, String date, String org_id, PostgresConnector psql, Logger logbook) throws Exception
+	public static ArrayList<Task> byStatus(String contact_id, String range_start, String range_end, String org_id, PostgresConnector psql, Logger logbook) throws Exception
 	{
-		logbook.INFO("Fetching tasks for user [" + contact_id + "] on date [" + date + "].");
+		logbook.INFO("Fetching tasks for user [" + contact_id + "] between range [" + range_start + " > " + range_end + "].");
 
 		ArrayList<Task> task_list = new ArrayList<Task>();
 		Task task;
@@ -34,8 +34,8 @@ public class ListTasks
 
 		try
 		{
-			String start = date + " 00:00:00";
-			String end = date + " 11:59:59";
+			String start = range_start;
+			String end = range_end;
 
 			PreparedStatement pst = psql.prepare(query, logbook);
 

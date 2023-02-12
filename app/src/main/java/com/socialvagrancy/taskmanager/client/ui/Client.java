@@ -116,6 +116,7 @@ public class Client extends javax.swing.JFrame {
         task_list_pane = new TaskList();
         
         login_pane.setApiController(api_controller);
+        task_list_pane.setApiController(api_controller);
         
         attachPanes();
         
@@ -173,6 +174,14 @@ public class Client extends javax.swing.JFrame {
         else
         {
             layout.show(screens, screen);
+            
+            switch(screen)
+            {
+                case "TASK_LIST":
+                    task_list_pane.refresh("NEW");
+                    break;
+            }
+                
         }
         
         refresh();
@@ -208,7 +217,7 @@ public class Client extends javax.swing.JFrame {
         
         boolean ignore_ssl = false;
         String url = "http://192.168.2.25:5050/sv/";
-        String log_path = "client_log.txt";
+        String log_path = "../log/client_log.txt";
         int log_level = 1;
         int log_size = 10240;
         int log_count = 3;

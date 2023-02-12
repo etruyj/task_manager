@@ -6,9 +6,13 @@
 
 package com.socialvagrancy.taskmanager.client.ui;
 
+import com.socialvagrancy.taskmanager.client.command.GetTasks;
 import com.socialvagrancy.taskmanager.client.command.Login;
+import com.socialvagrancy.taskmanager.structure.Task;
 import com.socialvagrancy.utils.Logger;
 import com.socialvagrancy.utils.http.RestApi;
+
+import java.util.ArrayList;
 
 public class Controller
 {
@@ -23,8 +27,25 @@ public class Controller
 		api = new RestApi(ignore_ssl);
 
 		logbook = new Logger(log_path, log_size, log_count, log_level);
+                logbook.info("Starting task manager java client");
 	}
 
+        public ArrayList<Task> getTasks(String date)
+        {
+            try
+            {
+                ArrayList<Task> task_list = GetTasks.forDay(base_url, "etruyj", date, api, logbook);
+         
+                return task_list;
+            }
+            catch(Exception e)
+            {
+                logbook.error(e.getMessage());
+            
+                return new ArrayList<Task>();
+            }
+        }
+        
 	public boolean login(String username, char[] password, String organization) throws Exception
 	{
 		try
