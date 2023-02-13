@@ -58,7 +58,48 @@ public class ListAccounts
 		
 		return account_list;
 	}
-	
+
+	public static Account findIdForUser(String org_id, String username, PostgresConnector psql, Logger logbook) throws Exception
+	{
+		logbook.info("Searching for account associted with user [" + username + "].");
+
+		Account account;
+
+		String query = "SELECT account.name, account.id, text_id FROM account "
+			+ "INNER JOIN contact ON contact.account_id = account.id "
+			+ "INNER JOIN user_organization ON user_organization.contact_id = contact.id "
+			+ "INNER JOIN client_user ON client_user.id = user_organization.user_id "
+			+ "WHERE client_user.name=? AND user_organization.organization_id=?;";
+
+		try
+		{
+			PreparedStatement pst = psql.prepare(query, logbook);
+
+			pst.setString(1, username);
+			pst.setString(2, org_id);
+
+			ResultSet results = pst.executeQuery();
+			
+			account = new Account();
+
+			while(results.next())
+			{
+				account.setName(results.getString(1));
+				account.setId(results.getString(2));
+				account.setDesc(results.getString(3));
+			}
+
+			logbook.info("Found: " + account.name());
+			
+			return account;
+		}
+		catch(SQLException e)
+		{
+			logbook.error(e.getMessage());
+			throw new Exception("Failed to find account for user [" + username + "].");
+		}
+	}
+
 	public static ArrayList search(String org_id, String search, PostgresConnector psql, Logger logbook)
 	{
 		logbook.INFO("Fetching list of accounts...");

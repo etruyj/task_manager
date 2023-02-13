@@ -6,6 +6,7 @@ package com.socialvagrancy.taskmanager.client.ui;
 
 import com.socialvagrancy.taskmanager.client.command.GetTasks;
 import com.socialvagrancy.taskmanager.client.ui.Controller;
+import com.socialvagrancy.taskmanager.structure.Contact;
 import com.socialvagrancy.taskmanager.structure.Task;
 import java.util.ArrayList;
 
@@ -162,9 +163,21 @@ public class TaskList extends javax.swing.JPanel implements Screen {
 
     @Override
     public void refresh(String id)
-    {
+    { 
         // Ignore the ID code
+        ArrayList<Contact> user_list = api_controller.getUsers();
         ArrayList<Task> task_list = api_controller.getTasks(task_date_picker.toString());
+    
+        // Reset the task owner selector box
+        owner_selector.removeAllItems();
+        
+        for(int i=0; i<user_list.size(); i++)
+        {
+            owner_selector.addItem(user_list.get(i).fullName());
+        }
+    
+        this.revalidate();
+        this.repaint();
     }
 
     @Override

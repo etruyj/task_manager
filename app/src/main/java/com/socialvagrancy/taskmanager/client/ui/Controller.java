@@ -6,8 +6,10 @@
 
 package com.socialvagrancy.taskmanager.client.ui;
 
+import com.socialvagrancy.taskmanager.client.command.GetContacts;
 import com.socialvagrancy.taskmanager.client.command.GetTasks;
 import com.socialvagrancy.taskmanager.client.command.Login;
+import com.socialvagrancy.taskmanager.structure.Contact;
 import com.socialvagrancy.taskmanager.structure.Task;
 import com.socialvagrancy.utils.Logger;
 import com.socialvagrancy.utils.http.RestApi;
@@ -43,6 +45,22 @@ public class Controller
                 logbook.error(e.getMessage());
             
                 return new ArrayList<Task>();
+            }
+        }
+        
+        public ArrayList<Contact> getUsers()
+        {
+            try
+            {
+                ArrayList<Contact> user_list = GetContacts.users(base_url, api, logbook);
+                
+                return user_list;
+            }
+            catch(Exception e)
+            {
+                logbook.error(e.getMessage());
+                
+                return new ArrayList<Contact>();
             }
         }
         

@@ -634,6 +634,65 @@ public class TaskManagerAPI
 	}
 
 	@GET
+	@Path("/contacts")
+	@Consumes("application/json")
+	@Produces("application/json")
+	public String listUserContacts(@HeaderParam("Authorization") String auth_token)
+	{
+		Logger logbook = (Logger) config.getProperty("logger");
+		PostgresConnector psql = (PostgresConnector) config.getProperty("database");
+
+		Gson gson = new Gson();
+		ServerResponse response = new ServerResponse();
+		PermissionLevel list_all = PermissionLevel.ORGANIZATION_USER;
+		PermissionLevel min_required = PermissionLevel.ACCOUNT_USER;
+
+
+		logbook.INFO("Servicing request: GET /contacts");
+		
+		ArrayList<Contact> contact_list;
+
+		try
+		{
+			Credential creds = ValidateToken.generateCredentials(auth_token, psql, logbook);
+
+			if(list_all.checkPermissions(creds.permissions()))
+			{
+				// List all active organization client users.
+				contact_list = ListContacts.activeOrganizationUsers(creds.organization(), psql, logbook);
+				
+				logbook.INFO("Found (" + contact_list.size() + ") user contacts.");
+
+				return gson.toJson(contact_list);
+
+			}
+			else if(min_required.checkPermissions(creds.permissions()))
+			{
+				// List all active account client users.
+				Account account = ListAccounts.findIdForUser(creds.organization(), creds.username(), psql, logbook);
+			
+				contact_list = ListContacts.activeAccountUsers(account.name(), creds.organization(), psql, logbook);
+
+				logbook.INFO("Found (" + contact_list.size() + ") user contacts.");
+
+				return gson.toJson(contact_list);
+			}
+			else
+			{
+				logbook.WARN("Restricted Access Attempt! User [" + creds.username() + "] attempted to list user contacts.");
+				response.setMessage("Insufficient privileges to list user contacts.");
+			}
+		}
+		catch(Exception e)
+		{
+			logbook.error(e.getMessage());
+		}
+
+		return gson.toJson(response);
+	}
+
+
+	@GET
 	@Path("/tasks")
 	@Consumes("application/json")
 	@Produces("application/json")

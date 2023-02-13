@@ -10,12 +10,17 @@ public class ApiUrls
 {
 	public static String listTasks(String base_url, String contact, String start_date, String end_date)
 	{
-		return base_url + "api/tasks?assignedTo=" + contact + "&start=" + start_date + "&end=" + end_date;
+            return base_url + "api/tasks?assignedTo=" + contact + "&start=" + start_date + "&end=" + end_date;
 	}
 
+        public static String listUsers(String base_url)
+        {
+            return base_url + "api/contacts";
+        }
+        
 	public static String login(String base_url)
 	{
-		return base_url + "api/token"; 
+            return base_url + "api/token"; 
 	}
 
 
