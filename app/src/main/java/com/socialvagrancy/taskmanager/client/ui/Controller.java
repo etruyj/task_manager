@@ -36,7 +36,7 @@ public class Controller
         {
             try
             {
-                ArrayList<Task> task_list = GetTasks.forDay(base_url, "etruyj", date, api, logbook);
+                ArrayList<Task> task_list = GetTasks.forDay(base_url, "05d02163-cf59-4db8-99a1-29196f96db98", date, token, api, logbook);
          
                 return task_list;
             }
@@ -52,7 +52,7 @@ public class Controller
         {
             try
             {
-                ArrayList<Contact> user_list = GetContacts.users(base_url, api, logbook);
+                ArrayList<Contact> user_list = GetContacts.users(base_url, token, api, logbook);
                 
                 return user_list;
             }
@@ -71,7 +71,7 @@ public class Controller
 			token = Login.getToken(base_url, username, password, organization, api, logbook);
 			// Clear from memory.
 			password = null;
-
+			
 			return true;
 		}
 		catch(Exception e)

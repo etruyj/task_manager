@@ -24,7 +24,7 @@ import java.util.ArrayList;
 
 public class GetTasks
 {
-	public static ArrayList<Task> forDay(String base_url, String contact, String date, RestApi api, Logger logbook) throws Exception
+	public static ArrayList<Task> forDay(String base_url, String contact, String date, String token, RestApi api, Logger logbook) throws Exception
 	{
 		Gson gson = new Gson();
                 ArrayList<Task> task_list = new ArrayList<Task>();
@@ -36,7 +36,7 @@ public class GetTasks
                 
                 logbook.debug("GET: " + api_url);
                 
-                String response = api.get(api_url);
+                String response = api.get(api_url, token);
                 
                 try
                 {

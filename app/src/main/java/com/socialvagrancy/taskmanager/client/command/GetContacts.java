@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 public class GetContacts
 {
-    public static ArrayList<Contact> users(String base_url, RestApi api, Logger logbook) throws Exception
+    public static ArrayList<Contact> users(String base_url, String token, RestApi api, Logger logbook) throws Exception
     {
         Gson gson = new Gson();
         
@@ -27,7 +27,7 @@ public class GetContacts
         
         logbook.debug("GET " + api_url);
         
-        String response = api.get(api_url);
+        String response = api.get(api_url, token);
         
         try
         {

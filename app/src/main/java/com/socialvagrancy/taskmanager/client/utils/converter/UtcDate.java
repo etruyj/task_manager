@@ -10,6 +10,7 @@ package com.socialvagrancy.taskmanager.client.utils.converter;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class UtcDate
 {
@@ -20,7 +21,9 @@ public class UtcDate
 		
 		ZonedDateTime utc_time = ZonedDateTime.of(local, ZoneId.systemDefault());
 
-		return utc_time.withZoneSameInstant(ZoneId.of(utc_zone)).toLocalDateTime().toString();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+		return utc_time.withZoneSameInstant(ZoneId.of(utc_zone)).toLocalDateTime().format(formatter);
 	}
 
 	public static String utcToLocal(String timestamp)
@@ -30,7 +33,9 @@ public class UtcDate
 		
 		ZonedDateTime utc_time = ZonedDateTime.of(local, ZoneId.of(utc_zone));
 
-		return utc_time.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime().toString();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+		return utc_time.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime().format(formatter);
 	}
 
 }

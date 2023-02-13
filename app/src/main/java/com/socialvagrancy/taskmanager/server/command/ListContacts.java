@@ -41,7 +41,7 @@ public class ListContacts
 			PreparedStatement pst = psql.prepare(query, logbook);
 
 			pst.setString(1, account);
-			pst.setString(2, org_id);
+			pst.setObject(2, UUID.fromString(org_id));
 
 			ResultSet rs = pst.executeQuery();
 
@@ -86,7 +86,7 @@ public class ListContacts
 		{
 			PreparedStatement pst = psql.prepare(query, logbook);
 
-			pst.setString(1, org_id);
+			pst.setObject(1, UUID.fromString(org_id));
 
 			ResultSet rs = pst.executeQuery();
 
