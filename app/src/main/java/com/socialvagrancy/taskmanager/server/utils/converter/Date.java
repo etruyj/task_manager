@@ -18,7 +18,7 @@ public class Date
 		// Converts yyyy-MM-ddTHH:mm:ss to 
 		// Postgres format yyyy-MM-dd HH:mm:ss
 		LocalDateTime passed = LocalDateTime.parse(timestamp);
-		DateTimeFormatter psql_format = DateTimeFormatter.ofPattern("yy-MM-dd HH:mm:ss");
+		DateTimeFormatter psql_format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 		return passed.format(psql_format);
 	}
