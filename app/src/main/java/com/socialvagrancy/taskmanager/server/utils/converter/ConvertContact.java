@@ -59,7 +59,7 @@ public class ConvertContact
 
 			System.err.println("query: " + pst);
 
-			if(rs.first())
+			while(rs.next())
 			{
 				String id = rs.getString(1);
 
@@ -67,11 +67,10 @@ public class ConvertContact
 
 				return id;
 			}
-			else
-			{
-				logbook.WARN("Unabled to find id for user [" + name + "]");
-				return "";
-			}
+			
+			// Default to failed query, no results.
+			logbook.WARN("Unabled to find id for user [" + name + "]");
+			return "";
 		}
 		catch(SQLException e)
 		{
