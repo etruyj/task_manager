@@ -32,11 +32,11 @@ public class Controller
                 logbook.info("Starting task manager java client");
 	}
 
-        public ArrayList<Task> getTasks(String date)
+        public ArrayList<Task> getTasks(String date, String owner)
         {
             try
             {
-                ArrayList<Task> task_list = GetTasks.forDay(base_url, "05d02163-cf59-4db8-99a1-29196f96db98", date, token, api, logbook);
+                ArrayList<Task> task_list = GetTasks.forDay(base_url, owner, date, token, api, logbook);
          
                 return task_list;
             }

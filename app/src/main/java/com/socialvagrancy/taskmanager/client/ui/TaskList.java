@@ -173,10 +173,12 @@ public class TaskList extends javax.swing.JPanel implements Screen {
     public void refresh(String id)
     { 
         // Ignore the ID code
-        ArrayList<Contact> user_list = api_controller.getUsers();
-        ArrayList<Task> task_list = api_controller.getTasks(task_date_picker.toString());
-    
+        // Using the screen interface which defines and item id.
+        
         // Reset the task owner selector box
+        // This needs to be completed first before querying for tasks
+        // otherwise we search for the default "Item 1"
+        ArrayList<Contact> user_list = api_controller.getUsers();
         owner_selector.removeAllItems();
         
         for(int i=0; i<user_list.size(); i++)
@@ -184,6 +186,8 @@ public class TaskList extends javax.swing.JPanel implements Screen {
             owner_selector.addItem(user_list.get(i).fullName());
         }
     
+        ArrayList<Task> task_list = api_controller.getTasks(task_date_picker.toString(), owner_selector.getSelectedItem().toString());
+        
         this.revalidate();
         this.repaint();
     }

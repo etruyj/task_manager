@@ -1,5 +1,5 @@
 //===================================================================
-// Date.java
+// ConvertDate.java
 // 	Description:
 // 		This class holds all the functions necessary for
 // 		converting the dates to a format that works for the
@@ -11,7 +11,7 @@ package com.socialvagrancy.taskmanager.server.utils.converter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Date
+public class ConvertDate
 {
 	public static String timestampToPsql(String timestamp)
 	{

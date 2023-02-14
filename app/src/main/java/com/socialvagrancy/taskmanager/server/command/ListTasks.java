@@ -7,7 +7,8 @@
 
 package com.socialvagrancy.taskmanager.server.command;
 
-import com.socialvagrancy.taskmanager.server.utils.converter.Date;
+import com.socialvagrancy.taskmanager.server.utils.converter.ConvertContact;
+import com.socialvagrancy.taskmanager.server.utils.converter.ConvertDate;
 import com.socialvagrancy.taskmanager.server.utils.database.PostgresConnector;
 import com.socialvagrancy.taskmanager.structure.Task;
 import com.socialvagrancy.taskmanager.structure.TaskStatus;
@@ -22,9 +23,9 @@ import java.util.UUID;
 
 public class ListTasks
 {
-	public static ArrayList<Task> byStatus(String contact_id, String range_start, String range_end, String org_id, PostgresConnector psql, Logger logbook) throws Exception
+	public static ArrayList<Task> byStatus(String contact, String range_start, String range_end, String org_id, PostgresConnector psql, Logger logbook) throws Exception
 	{
-		logbook.INFO("Fetching tasks for user [" + contact_id + "] between range [" + range_start + " > " + range_end + "].");
+		logbook.INFO("Fetching tasks for user [" + contact + "] between range [" + range_start + " > " + range_end + "].");
 
 		ArrayList<Task> task_list = new ArrayList<Task>();
 		Task task;
@@ -35,13 +36,14 @@ public class ListTasks
 
 		try
 		{
+			// Convert the contact name to the UUID which is what is used to search for tasks.
+			String contact_id = ConvertContact.fullnameToUUID(contact, org_id, psql, logbook);
+
 			// Convert the yyyy-MM-ddTHH:mm:ss timestamp
 			// passed by the client to a parseable format
 			// yy-MM-dd HH:mm:ss
-			String start = Date.timestampToPsql(range_start);
-			String end = Date.timestampToPsql(range_end);
-
-			System.err.println("[" + start + " > " + end + "]");
+			String start = ConvertDate.timestampToPsql(range_start);
+			String end = ConvertDate.timestampToPsql(range_end);
 
 			PreparedStatement pst = psql.prepare(query, logbook);
 
@@ -74,7 +76,7 @@ public class ListTasks
 		catch(SQLException e)
 		{
 			logbook.ERR(e.getMessage());
-			throw new Exception("Unable to list tasks for user [" + contact_id + "]");
+			throw new Exception("Unable to list tasks for user [" + contact + "]");
 		}	
 	}
 }
