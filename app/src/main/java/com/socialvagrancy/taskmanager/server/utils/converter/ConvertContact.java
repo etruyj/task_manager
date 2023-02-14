@@ -41,6 +41,9 @@ public class ConvertContact
 			last_name += name_parts[i] + " ";
 		}
 
+		// Drop the trailing space
+		last_name = last_name.substring(0, last_name.length()-1);
+
 		try
 		{
 			String query = "SELECT id FROM contact "
