@@ -38,7 +38,7 @@ public class ConvertContact
 		// Use length - 1 to omit the last index: first name
 		for(int i=0; i<name_parts.length-1; i++)
 		{
-			last_name += name_parts[i];
+			last_name += name_parts[i] + " ";
 		}
 
 		try
@@ -53,6 +53,8 @@ public class ConvertContact
 			pst.setObject(3, UUID.fromString(org_id));
 
 			ResultSet rs = pst.executeQuery();
+
+			System.err.println("query: " + pst);
 
 			if(rs.first())
 			{
