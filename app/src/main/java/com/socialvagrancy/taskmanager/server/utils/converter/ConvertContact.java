@@ -57,8 +57,6 @@ public class ConvertContact
 
 			ResultSet rs = pst.executeQuery();
 
-			System.err.println("query: " + pst);
-
 			while(rs.next())
 			{
 				String id = rs.getString(1);
