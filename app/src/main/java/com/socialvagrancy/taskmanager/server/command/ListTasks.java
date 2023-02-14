@@ -7,6 +7,7 @@
 
 package com.socialvagrancy.taskmanager.server.command;
 
+import com.socialvagrancy.taskmanager.server.utils.converter.Date;
 import com.socialvagrancy.taskmanager.server.utils.database.PostgresConnector;
 import com.socialvagrancy.taskmanager.structure.Task;
 import com.socialvagrancy.taskmanager.structure.TaskStatus;
@@ -37,8 +38,8 @@ public class ListTasks
 			// Convert the yyyy-MM-ddTHH:mm:ss timestamp
 			// passed by the client to a parseable format
 			// yy-MM-dd HH:mm:ss
-			String start = range_start.replace("T", " ");
-			String end = range_end.replace("T", " ");
+			String start = Date.timestampToPsql(range_start);
+			String end = Date.timestampToPsql(range_end);
 
 			System.err.println("[" + start + " > " + end + "]");
 
