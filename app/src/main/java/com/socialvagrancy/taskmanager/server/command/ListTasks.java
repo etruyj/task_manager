@@ -40,6 +40,8 @@ public class ListTasks
 			String start = range_start.replace("T", " ");
 			String end = range_end.replace("T", " ");
 
+			System.err.println("[" + start + " > " + end + "]");
+
 			PreparedStatement pst = psql.prepare(query, logbook);
 
 			pst.setObject(1, UUID.fromString(contact_id));
