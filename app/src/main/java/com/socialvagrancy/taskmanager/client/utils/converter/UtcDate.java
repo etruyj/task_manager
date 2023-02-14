@@ -21,9 +21,9 @@ public class UtcDate
 		
 		ZonedDateTime utc_time = ZonedDateTime.of(local, ZoneId.systemDefault());
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-		return utc_time.withZoneSameInstant(ZoneId.of(utc_zone)).toLocalDateTime().format(formatter);
+		return utc_time.withZoneSameInstant(ZoneId.of(utc_zone)).toLocalDateTime().toString();
 	}
 
 	public static String utcToLocal(String timestamp)

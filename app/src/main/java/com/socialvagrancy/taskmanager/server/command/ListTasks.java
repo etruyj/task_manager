@@ -34,8 +34,11 @@ public class ListTasks
 
 		try
 		{
-			String start = range_start;
-			String end = range_end;
+			// Convert the yyyy-MM-ddTHH:mm:ss timestamp
+			// passed by the client to a parseable format
+			// yy-MM-dd HH:mm:ss
+			String start = range_start.replace("T", " ");
+			String end = range_end.replace("T", " ");
 
 			PreparedStatement pst = psql.prepare(query, logbook);
 

@@ -8,6 +8,9 @@ import com.socialvagrancy.taskmanager.client.command.GetTasks;
 import com.socialvagrancy.taskmanager.client.ui.Controller;
 import com.socialvagrancy.taskmanager.structure.Contact;
 import com.socialvagrancy.taskmanager.structure.Task;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 /**
@@ -22,6 +25,11 @@ public class TaskList extends javax.swing.JPanel implements Screen {
     public TaskList() {
         initComponents();
         task_date_picker.setDateToToday();
+        search_button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                refresh(null); // Null refresh as no id is required.
+            }
+        });
     }
 
     /**
