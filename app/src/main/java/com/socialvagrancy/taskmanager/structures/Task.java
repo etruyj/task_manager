@@ -126,7 +126,7 @@ public class Task
 
 	public Task setSubject(String s)
 	{
-		start_time = s;
+		subject = s;
 		return this;
 	}
 }

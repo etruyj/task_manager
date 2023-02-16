@@ -711,9 +711,10 @@ public class TaskManagerAPI
 		
 		if(contact_id != null && range_start != null && range_end != null)
 		{
+			Credential creds = null;
 			try
 			{
-				Credential creds = ValidateToken.generateCredentials(auth_token, psql, logbook);
+				creds = ValidateToken.generateCredentials(auth_token, psql, logbook);
 
 				if(min_required.checkPermissions(creds.permissions()))
 				{
@@ -732,8 +733,16 @@ public class TaskManagerAPI
 			}
 			catch(Exception e)
 			{
-				logbook.ERR(e.getMessage());
-				response.setMessage("Failed to retrieve tasks.");
+				if(creds == null)
+				{
+					logbook.ERR("ILLEGAL ACCESS ATTEMPT: /tasks");
+					response.setMessage("ILLEGAL ACCESS ATTEMPT");
+				}
+				else
+				{
+					logbook.ERR(e.getMessage());
+					response.setMessage("Failed to retrieve tasks.");
+				}
 			}
 		}
 		else
@@ -766,9 +775,7 @@ public class TaskManagerAPI
 			{
 				LoginCredential creds = gson.fromJson(body, LoginCredential.class);
 
-				String jwt = GenerateToken.authenticate(creds.username(), creds.password(), creds.organization(), psql, logbook);
-
-				Token token = new Token(jwt);
+				Token token = GenerateToken.authenticate(creds.username(), creds.password(), creds.organization(), psql, logbook);
 
 				return gson.toJson(token);
 			}

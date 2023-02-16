@@ -14,6 +14,11 @@ package com.socialvagrancy.taskmanager.server.utils.security;
 import com.socialvagrancy.taskmanager.server.utils.database.PostgresConnector;
 import com.socialvagrancy.utils.Logger;
 
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.JWT;
+
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -21,32 +26,22 @@ import java.util.UUID;
 
 public class AccessToken
 {
-	public static void create(String jwt, UUID user_id, UUID org_id, PostgresConnector psql, Logger logbook)
+	public static String generate() throws Exception
 	{
-		UUID id = UUID.randomUUID();
-		LocalDateTime expires = LocalDateTime.now().plusHours(1);
-
-		String query = "INSERT INTO access_token "
-				+ "(id, token, user_id, organization_id, expires) "
-				+ "VALUES (?, ?, ?, ?, ?);";
-
 		try
 		{
-			PreparedStatement pst = psql.prepare(query, logbook);
+			Algorithm algorithm = Algorithm.RSA256(RsaKeys.importPublicKey(), RsaKeys.importPrivateKey());
 
-			pst.setObject(1, id);
-			pst.setString(2, jwt);
-			pst.setObject(3, user_id);
-			pst.setObject(4, org_id);
-			pst.setObject(5, expires);
+			String jwt = JWT.create()
+					.withIssuer("socialvagrancy.com")
+					.sign(algorithm);
 
-			pst.executeUpdate();
+			return jwt;
 		}
-		catch(SQLException e)
+		catch(Exception e)
 		{
-			logbook.ERR(e.getMessage());
+			throw e;
 		}
-
 	}
 
 	public static void pruneExpired(PostgresConnector psql, Logger logbook) throws Exception
@@ -72,6 +67,34 @@ public class AccessToken
 			
 			throw new Exception("Unabled to prune expired tokens.");
 		}
+	}
+
+	public static void register(String jwt, UUID user_id, UUID org_id, PostgresConnector psql, Logger logbook)
+	{
+		UUID id = UUID.randomUUID();
+		LocalDateTime expires = LocalDateTime.now().plusHours(1);
+
+		String query = "INSERT INTO access_token "
+				+ "(id, token, user_id, organization_id, expires) "
+				+ "VALUES (?, ?, ?, ?, ?);";
+
+		try
+		{
+			PreparedStatement pst = psql.prepare(query, logbook);
+
+			pst.setObject(1, id);
+			pst.setString(2, jwt);
+			pst.setObject(3, user_id);
+			pst.setObject(4, org_id);
+			pst.setObject(5, expires);
+
+			pst.executeUpdate();
+		}
+		catch(SQLException e)
+		{
+			logbook.ERR(e.getMessage());
+		}
+
 	}
 
 	public static void renewAccess(UUID token_id, PostgresConnector psql, Logger logbook) throws Exception

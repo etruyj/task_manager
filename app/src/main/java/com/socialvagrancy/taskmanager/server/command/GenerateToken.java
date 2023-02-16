@@ -8,7 +8,7 @@ package com.socialvagrancy.taskmanager.server.command;
 
 import com.socialvagrancy.taskmanager.server.utils.database.PostgresConnector;
 import com.socialvagrancy.taskmanager.server.utils.security.AccessToken;
-import com.socialvagrancy.taskmanager.server.utils.security.Token;
+import com.socialvagrancy.taskmanager.structure.Token;
 import com.socialvagrancy.utils.Logger;
 
 import org.mindrot.jbcrypt.BCrypt;
@@ -22,13 +22,14 @@ import java.util.UUID;
 
 public class GenerateToken
 {
-	public static String authenticate(String username, String password, String organization, PostgresConnector psql, Logger logbook) throws Exception
+	public static Token authenticate(String username, String password, String organization, PostgresConnector psql, Logger logbook) throws Exception
 	{
 		logbook.INFO("Authenticating user [" + username + "] for organization [" + organization + "]");
 
-		String query = "SELECT client_user.id, client_user.password, organization.id FROM client_user "
+		String query = "SELECT client_user.id, client_user.password, organization.id, contact.first_name, contact.last_name FROM client_user "
 			+ "INNER JOIN user_organization ON user_organization.user_id = client_user.id "
 			+ "INNER JOIN organization ON organization.id = user_organization.organization_id "
+			+ "INNER JOIN contact ON contact.id = user_organization.contact_id "
 			+ "WHERE client_user.name=? AND organization.name=?;";
 
 		try
@@ -44,11 +45,12 @@ public class GenerateToken
 			{
 				if(BCrypt.checkpw(password, rs.getString(2)))
 				{
-					String jwt = Token.generateJWT();
+					String jwt = AccessToken.generate();
 
-					AccessToken.create(jwt, UUID.fromString(rs.getString(1)), UUID.fromString(rs.getString(3)), psql, logbook); 
+					AccessToken.register(jwt, UUID.fromString(rs.getString(1)), UUID.fromString(rs.getString(3)), psql, logbook); 
 
-					return jwt;
+					Token token = new Token(jwt, rs.getString("first_name"), rs.getString("last_name"));
+					return token;
 				}
 				else
 				{
