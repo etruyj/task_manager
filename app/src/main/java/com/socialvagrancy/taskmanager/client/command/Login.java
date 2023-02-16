@@ -34,6 +34,7 @@ public class Login
 			logbook.info("Logging in for user " + organization + ":" + username);
 			logbook.debug("POST: " + url);
 			String response = api.authenticate(url, gson.toJson(creds));
+                        logbook.debug(response);
 			Token token = gson.fromJson(response, Token.class);
 
 			logbook.info("Login successful for " + organization + ":" + username);

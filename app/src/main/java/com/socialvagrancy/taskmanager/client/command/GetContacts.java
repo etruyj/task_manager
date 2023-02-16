@@ -29,6 +29,8 @@ public class GetContacts
         
         String response = api.get(api_url, token);
         
+        logbook.debug(response);
+        
         try
         {
             Contact[] users = gson.fromJson(response, Contact[].class);

@@ -38,6 +38,8 @@ public class GetTasks
                 
                 String response = api.get(api_url, token);
                 
+                logbook.debug(response);
+                
                 try
                 {
                     Task[] tasks = gson.fromJson(response, Task[].class);

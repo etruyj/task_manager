@@ -95,11 +95,13 @@ public class Client extends javax.swing.JFrame {
         screen_listener = new ActionListener() {;
                 public void actionPerformed(ActionEvent e)
                 {
+                    System.err.println(e.getActionCommand());
                     processButtonActions(e.getActionCommand());
                 }
         };
         
         login_pane.attachToClient(screen_listener);
+        task_list_pane.attachToClient(screen_listener);
     }
     
     private void initializeClient(String base_url, boolean ignore_ssl, String log_path, int log_level, int log_size, int log_count)
