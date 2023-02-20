@@ -8,7 +8,8 @@ package com.socialvagrancy.taskmanager.structure;
 
 public enum TaskStatus
 {
-	BLOCKED,
+	ACTIVE,
+        BLOCKED,
 	READY,
 	COMPLETE
 }

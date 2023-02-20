@@ -18,7 +18,7 @@ import java.lang.StringBuilder;
 
 public class Login
 {
-	public static String getToken(String base_url, String username, char[] password, String organization, RestApi api, Logger logbook) throws Exception
+	public static Token getToken(String base_url, String username, char[] password, String organization, RestApi api, Logger logbook) throws Exception
 	{
 		LoginCredential creds = new LoginCredential();
 		Gson gson = new Gson();
@@ -39,7 +39,7 @@ public class Login
 
 			logbook.info("Login successful for " + organization + ":" + username);
 
-			return token.get();
+			return token;
 		}
 		catch(Exception e)
 		{

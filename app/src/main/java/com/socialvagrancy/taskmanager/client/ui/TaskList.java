@@ -84,6 +84,11 @@ public class TaskList extends javax.swing.JPanel implements Screen {
         date_label.setFont(new java.awt.Font("Helvetica Neue", 0, 10)); // NOI18N
 
         new_task_button.setText("New");
+        new_task_button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                new_task_buttonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout overview_paneLayout = new javax.swing.GroupLayout(overview_pane);
         overview_pane.setLayout(overview_paneLayout);
@@ -142,7 +147,7 @@ public class TaskList extends javax.swing.JPanel implements Screen {
         );
         task_list_panelLayout.setVerticalGroup(
             task_list_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(task_list_scroll_pane)
+            .addComponent(task_list_scroll_pane, javax.swing.GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -175,6 +180,11 @@ public class TaskList extends javax.swing.JPanel implements Screen {
         // TODO add your handling code here:
         refresh(owner_selector.getSelectedItem().toString());
     }//GEN-LAST:event_search_buttonActionPerformed
+
+    private void new_task_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_new_task_buttonActionPerformed
+        ActionEvent ae = new ActionEvent(new_task_button, 0, "TASK_DETAILS:NEW");
+        screen_listener.actionPerformed(ae);
+    }//GEN-LAST:event_new_task_buttonActionPerformed
 
     @Override
     public void refresh(String id)

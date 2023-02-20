@@ -124,12 +124,10 @@ public class Login extends javax.swing.JPanel {
         
         try
         {
-            if(api_controller.login(username, password, organization))
-            {
-                ActionEvent e = new ActionEvent(login_button, 0, "LOGIN_SUCCESSFUL");
+            String contact = api_controller.login(username, password, organization);
+            ActionEvent e = new ActionEvent(login_button, 0, "LOGIN_SUCCESSFUL:" + contact);
                 
-                screen_listener.actionPerformed(e);
-            }
+            screen_listener.actionPerformed(e);
         }
         catch(Exception e)
         {

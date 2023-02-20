@@ -83,8 +83,8 @@ public class Client extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(display_pane, javax.swing.GroupLayout.PREFERRED_SIZE, 465, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(display_pane, javax.swing.GroupLayout.PREFERRED_SIZE, 561, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -95,19 +95,22 @@ public class Client extends javax.swing.JFrame {
         screen_listener = new ActionListener() {;
                 public void actionPerformed(ActionEvent e)
                 {
-                    System.err.println(e.getActionCommand());
+                    System.err.println(e.getActionCommand());                   
                     processButtonActions(e.getActionCommand());
                 }
         };
         
         login_pane.attachToClient(screen_listener);
+        task_details_pane.attachToClient(screen_listener);
         task_list_pane.attachToClient(screen_listener);
+
     }
     
     private void initializeClient(String base_url, boolean ignore_ssl, String log_path, int log_level, int log_size, int log_count)
     {
         api_controller = new Controller(base_url, ignore_ssl, log_path, log_level, log_size, log_count);
         logged_in = false;
+        screen_history = new String[5];
         
         screens = new javax.swing.JPanel(new CardLayout());
         account_details_pane = new AccountDetails();
@@ -118,6 +121,7 @@ public class Client extends javax.swing.JFrame {
         task_list_pane = new TaskList();
         
         login_pane.setApiController(api_controller);
+        task_details_pane.setApiController(api_controller);
         task_list_pane.setApiController(api_controller);
         
         attachPanes();
@@ -131,8 +135,11 @@ public class Client extends javax.swing.JFrame {
         
         display_pane.add(screens);
   
-        refresh();        
-        showScreen("LOGIN");
+        refresh();
+        // Testing
+        //logged_in = true;
+        //showScreen("TASK_DETAILS", "NEW");
+        showScreen("LOGIN", null);
 
     }
     
@@ -140,15 +147,45 @@ public class Client extends javax.swing.JFrame {
     {
         // Process the signals emitted by the buttons on different 
         // screens in order to switch screens to the desired new one.
+        String object_id = null;
+        
+        
+        // Do this first to change the command after the return.
+        int history_counter = 0;
+        while(command.equals("RETURN"))
+        {
+            history_counter += 1;
+            command = screen_history[history_counter];
+            System.err.println("Last screen: " + command);
+        }
+            
+        // Store the command history
+        storeHistory(command);
+        
+        // Split the button command from any object information
+        // Expected format command:object_id
+        String[] com_parts = command.split(":");
+               
+        command = com_parts[0];
+        
+        if(com_parts.length > 1)
+        {
+            object_id = com_parts[1];
+        } 
+        
         switch (command)
         {
                 case "LOGIN_SUCCESSFUL":
+                case "TASK_LIST":
                     logged_in = true;
-                    showScreen("TASK_LIST");
+                    showScreen("TASK_LIST", object_id);
                     break;
                 case "LOGOUT":
                     logged_in = false;
-                    showScreen("LOGIN");
+                    showScreen("LOGIN", null);
+                    break;      
+                case "TASK_DETAILS":
+                    showScreen("TASK_DETAILS", object_id);
                     break;
         }
     }
@@ -163,7 +200,7 @@ public class Client extends javax.swing.JFrame {
         display_pane.repaint();
     }
     
-    private void showScreen(String screen)
+    private void showScreen(String screen, String object_id)
     {
         CardLayout layout = new CardLayout();
         layout = (CardLayout) screens.getLayout();
@@ -179,8 +216,11 @@ public class Client extends javax.swing.JFrame {
             
             switch(screen)
             {
+                case "TASK_DETAILS":
+                    task_details_pane.refresh(object_id);
+                    break;
                 case "TASK_LIST":
-                    task_list_pane.refresh("NEW");
+                    task_list_pane.refresh(object_id);
                     break;
             }
                 
@@ -189,6 +229,27 @@ public class Client extends javax.swing.JFrame {
         refresh();
     }
     
+    private void storeHistory(String command)
+    {
+        // Store the history of what screens were used.
+        // This allows for going back through the history 
+        // with the cancel button.
+        String history = "";
+        for(int i = screen_history.length-1; i>=0; i--)
+        {
+            if(screen_history[i] != null)
+            {
+                history = screen_history[i];
+            }
+            
+            if(i <= screen_history.length-2)
+            {
+                screen_history[i+1]  = history;
+            }
+        }
+        
+        screen_history[0] = command;
+    }
 
     /**
      * @param args the command line arguments
@@ -256,5 +317,6 @@ public class Client extends javax.swing.JFrame {
     private ActionListener screen_listener;
     private boolean logged_in;
     private Controller api_controller;
+    private String[] screen_history;
     
 }

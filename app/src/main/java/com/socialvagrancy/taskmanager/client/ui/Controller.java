@@ -6,11 +6,18 @@
 
 package com.socialvagrancy.taskmanager.client.ui;
 
+import com.socialvagrancy.taskmanager.client.command.GetAccounts;
 import com.socialvagrancy.taskmanager.client.command.GetContacts;
+import com.socialvagrancy.taskmanager.client.command.GetLocations;
+import com.socialvagrancy.taskmanager.client.command.GetProjects;
 import com.socialvagrancy.taskmanager.client.command.GetTasks;
 import com.socialvagrancy.taskmanager.client.command.Login;
+import com.socialvagrancy.taskmanager.structure.Account;
 import com.socialvagrancy.taskmanager.structure.Contact;
+import com.socialvagrancy.taskmanager.structure.Location;
+import com.socialvagrancy.taskmanager.structure.Project;
 import com.socialvagrancy.taskmanager.structure.Task;
+import com.socialvagrancy.taskmanager.structure.Token;
 import com.socialvagrancy.utils.Logger;
 import com.socialvagrancy.utils.http.RestApi;
 
@@ -32,6 +39,54 @@ public class Controller
                 logbook.info("Starting task manager java client");
 	}
 
+	public ArrayList<Account> getAccounts()
+	{
+		try
+		{
+			ArrayList<Account> account_list = GetAccounts.all(base_url, token, api, logbook);
+
+			return account_list;
+		}
+		catch(Exception e)
+		{
+			logbook.error(e.getMessage());
+
+			return new ArrayList<Account>();
+		}
+	}
+
+        public ArrayList<Location> getLocations(String account, boolean status)
+        {
+            try
+            {
+                ArrayList<Location> location_list = GetLocations.byStatus(base_url, account, status, token, api, logbook);
+                
+                return location_list;
+            }
+            catch(Exception e)
+            {
+                logbook.error(e.getMessage());
+                
+                return new ArrayList<Location>();
+            }
+        }
+        
+        public ArrayList<Project> getProjects(String account, boolean status)
+        {
+            try
+            {
+                ArrayList<Project> project_list = GetProjects.byStatus(base_url, account, status, token, api, logbook);
+                
+                return project_list;
+            }
+            catch(Exception e)
+            {
+                logbook.error(e.getMessage());
+                
+                return new ArrayList<Project>();
+            }
+        }
+        
         public ArrayList<Task> getTasks(String date, String owner)
         {
             try
@@ -64,15 +119,16 @@ public class Controller
             }
         }
         
-	public boolean login(String username, char[] password, String organization) throws Exception
+	public String login(String username, char[] password, String organization) throws Exception
 	{
 		try
 		{
-			token = Login.getToken(base_url, username, password, organization, api, logbook);
+			Token t = Login.getToken(base_url, username, password, organization, api, logbook);
 			// Clear from memory.
 			password = null;
-			
-			return true;
+			token = t.get();
+                        
+			return t.name();
 		}
 		catch(Exception e)
 		{

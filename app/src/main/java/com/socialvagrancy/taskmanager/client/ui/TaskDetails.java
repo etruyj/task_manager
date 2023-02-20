@@ -4,17 +4,81 @@
  */
 package com.socialvagrancy.taskmanager.client.ui;
 
+import com.socialvagrancy.taskmanager.client.ui.Controller;
+import com.socialvagrancy.taskmanager.structure.Account;
+import com.socialvagrancy.taskmanager.structure.Contact;
+import com.socialvagrancy.taskmanager.structure.Location;
+import com.socialvagrancy.taskmanager.structure.Project;
+import com.socialvagrancy.taskmanager.structure.Task;
+import com.socialvagrancy.taskmanager.structure.TaskStatus;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 /**
  *
  * @author seans
  */
-public class TaskDetails extends javax.swing.JPanel {
+public class TaskDetails extends javax.swing.JPanel implements Screen
+{
 
     /**
      * Creates new form TaskDetails
      */
     public TaskDetails() {
         initComponents();
+        
+        //=======================================
+        // Add action listeners
+        //=======================================
+        
+        account_selector.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                // When an account is selected, the projects, locations, and
+                // groups need to be loaded.
+                if(account_selector.getSelectedItem() != null)
+                {
+                    loadProjects(account_selector.getSelectedItem().toString());
+                    loadLocations(account_selector.getSelectedItem().toString());
+                }
+            }
+        });
+        
+        complete_box.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if(complete_box.isSelected())
+                {
+                    status_selector.setSelectedItem("COMPLETE");
+                }
+                else
+                {
+                    status_selector.setSelectedItem("ACTIVE");
+                }
+            }
+        });
+        
+        status_selector.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                // If completed status is chosen, check the completed status box.
+                // Protect against executing the code if the combobox hasn't been filled yet.
+                if(status_selector.getSelectedItem() != null && status_selector.getSelectedItem().toString().equals("COMPLETE"))
+                {
+                    complete_box.setSelected(true);
+                }
+                else
+                {
+                    complete_box.setSelected(false);
+                }
+            }
+        });
     }
 
     /**
@@ -26,358 +90,441 @@ public class TaskDetails extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jToolBar1 = new javax.swing.JToolBar();
-        subject_panel = new javax.swing.JPanel();
+        summary_panel = new javax.swing.JPanel();
+        first_row = new javax.swing.JPanel();
+        subject_box = new javax.swing.JPanel();
         subject_field = new javax.swing.JTextField();
-        date_panel = new javax.swing.JPanel();
+        second_row = new javax.swing.JPanel();
+        start_time_box = new javax.swing.JPanel();
         date_field = new javax.swing.JTextField();
-        duration_panel = new javax.swing.JPanel();
+        calendar_button = new javax.swing.JButton();
+        time_selector = new javax.swing.JComboBox<>();
+        done_box = new javax.swing.JPanel();
+        complete_box = new javax.swing.JCheckBox();
+        third_row = new javax.swing.JPanel();
+        duration_box = new javax.swing.JPanel();
         duration_field = new javax.swing.JTextField();
-        complete_panel = new javax.swing.JPanel();
-        complete_marker = new javax.swing.JCheckBox();
-        description_panel = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        description_area = new javax.swing.JTextArea();
-        description_scrollbar = new javax.swing.JScrollBar();
+        duration_unit_selector = new javax.swing.JComboBox<>();
+        status_box = new javax.swing.JPanel();
+        status_selector = new javax.swing.JComboBox<>();
+        fourth_row = new javax.swing.JPanel();
+        owner_selector = new javax.swing.JComboBox<>();
+        info_panel = new javax.swing.JPanel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        info_box = new javax.swing.JPanel();
+        account_box = new javax.swing.JPanel();
+        account_selector = new javax.swing.JComboBox<>();
+        project_box = new javax.swing.JPanel();
+        project_selector = new javax.swing.JComboBox<>();
+        location_box = new javax.swing.JPanel();
+        location_selector = new javax.swing.JComboBox<>();
+        group_box = new javax.swing.JPanel();
+        group_selector = new javax.swing.JComboBox<>();
+        contact_box = new javax.swing.JPanel();
+        contact_selector = new javax.swing.JComboBox<>();
+        details_box = new javax.swing.JPanel();
+        details_scroll_pane = new javax.swing.JScrollPane();
+        details_area = new javax.swing.JTextArea();
         button_panel = new javax.swing.JPanel();
         new_button = new javax.swing.JButton();
         save_button = new javax.swing.JButton();
         cancel_button = new javax.swing.JButton();
-        account_panel = new javax.swing.JPanel();
-        account_selector = new javax.swing.JComboBox<>();
-        type_pane = new javax.swing.JPanel();
-        type_selector = new javax.swing.JComboBox<>();
-        owner_panel = new javax.swing.JPanel();
-        owner_selector = new javax.swing.JComboBox<>();
-        project_pane = new javax.swing.JPanel();
-        project_selector = new javax.swing.JComboBox<>();
-        location_panel = new javax.swing.JPanel();
-        location_selector = new javax.swing.JComboBox<>();
 
-        jToolBar1.setRollover(true);
+        setMinimumSize(new java.awt.Dimension(360, 260));
 
-        setBorder(javax.swing.BorderFactory.createTitledBorder("Task Details\n"));
+        summary_panel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        summary_panel.setMinimumSize(new java.awt.Dimension(360, 240));
+        summary_panel.setPreferredSize(new java.awt.Dimension(360, 240));
+        summary_panel.setLayout(new java.awt.GridLayout(4, 0));
 
-        subject_panel.setBorder(javax.swing.BorderFactory.createTitledBorder("Subject:"));
+        subject_box.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Summary:"));
+        subject_box.setPreferredSize(new java.awt.Dimension(350, 54));
+        subject_box.setLayout(new java.awt.BorderLayout());
 
-        subject_field.setText("jTextField1");
-
-        javax.swing.GroupLayout subject_panelLayout = new javax.swing.GroupLayout(subject_panel);
-        subject_panel.setLayout(subject_panelLayout);
-        subject_panelLayout.setHorizontalGroup(
-            subject_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(subject_panelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(subject_field, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        subject_panelLayout.setVerticalGroup(
-            subject_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(subject_field, javax.swing.GroupLayout.Alignment.TRAILING)
-        );
-
-        date_panel.setBorder(javax.swing.BorderFactory.createTitledBorder("Due Date:"));
-
-        date_field.setText("jTextField2");
-
-        javax.swing.GroupLayout date_panelLayout = new javax.swing.GroupLayout(date_panel);
-        date_panel.setLayout(date_panelLayout);
-        date_panelLayout.setHorizontalGroup(
-            date_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, date_panelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(date_field, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-        date_panelLayout.setVerticalGroup(
-            date_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(date_panelLayout.createSequentialGroup()
-                .addComponent(date_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-
-        duration_panel.setBorder(javax.swing.BorderFactory.createTitledBorder("Duration:"));
-
-        duration_field.setText("jTextField3");
-
-        javax.swing.GroupLayout duration_panelLayout = new javax.swing.GroupLayout(duration_panel);
-        duration_panel.setLayout(duration_panelLayout);
-        duration_panelLayout.setHorizontalGroup(
-            duration_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(duration_panelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(duration_field, javax.swing.GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        duration_panelLayout.setVerticalGroup(
-            duration_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, duration_panelLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(duration_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-
-        complete_panel.setBorder(javax.swing.BorderFactory.createTitledBorder("Completed:"));
-
-        javax.swing.GroupLayout complete_panelLayout = new javax.swing.GroupLayout(complete_panel);
-        complete_panel.setLayout(complete_panelLayout);
-        complete_panelLayout.setHorizontalGroup(
-            complete_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, complete_panelLayout.createSequentialGroup()
-                .addContainerGap(50, Short.MAX_VALUE)
-                .addComponent(complete_marker)
-                .addContainerGap())
-        );
-        complete_panelLayout.setVerticalGroup(
-            complete_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(complete_panelLayout.createSequentialGroup()
-                .addComponent(complete_marker)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-
-        description_panel.setBorder(javax.swing.BorderFactory.createTitledBorder("Description:"));
-
-        description_area.setColumns(20);
-        description_area.setRows(5);
-        jScrollPane1.setViewportView(description_area);
-
-        javax.swing.GroupLayout description_panelLayout = new javax.swing.GroupLayout(description_panel);
-        description_panel.setLayout(description_panelLayout);
-        description_panelLayout.setHorizontalGroup(
-            description_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(description_panelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 325, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(description_scrollbar, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-        description_panelLayout.setVerticalGroup(
-            description_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(description_panelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(description_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(description_scrollbar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-
-        new_button.setText("New");
-
-        save_button.setText("Save");
-
-        cancel_button.setText("Cancel");
-
-        javax.swing.GroupLayout button_panelLayout = new javax.swing.GroupLayout(button_panel);
-        button_panel.setLayout(button_panelLayout);
-        button_panelLayout.setHorizontalGroup(
-            button_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(button_panelLayout.createSequentialGroup()
-                .addGap(39, 39, 39)
-                .addComponent(cancel_button)
-                .addGap(18, 18, 18)
-                .addComponent(new_button)
-                .addGap(18, 18, 18)
-                .addComponent(save_button)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        button_panelLayout.setVerticalGroup(
-            button_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(button_panelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(button_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(new_button)
-                    .addComponent(save_button)
-                    .addComponent(cancel_button)))
-        );
-
-        account_panel.setBorder(javax.swing.BorderFactory.createTitledBorder("Account:"));
-
-        account_selector.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        account_selector.addActionListener(new java.awt.event.ActionListener() {
+        subject_field.setPreferredSize(new java.awt.Dimension(300, 23));
+        subject_field.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                account_selectorActionPerformed(evt);
+                subject_fieldActionPerformed(evt);
             }
         });
+        subject_box.add(subject_field, java.awt.BorderLayout.CENTER);
 
-        javax.swing.GroupLayout account_panelLayout = new javax.swing.GroupLayout(account_panel);
-        account_panel.setLayout(account_panelLayout);
-        account_panelLayout.setHorizontalGroup(
-            account_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(account_panelLayout.createSequentialGroup()
-                .addComponent(account_selector, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        account_panelLayout.setVerticalGroup(
-            account_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(account_selector, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
+        first_row.add(subject_box);
 
-        type_pane.setBorder(javax.swing.BorderFactory.createTitledBorder("Type:"));
+        summary_panel.add(first_row);
 
-        type_selector.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        second_row.setLayout(new javax.swing.BoxLayout(second_row, javax.swing.BoxLayout.LINE_AXIS));
 
-        javax.swing.GroupLayout type_paneLayout = new javax.swing.GroupLayout(type_pane);
-        type_pane.setLayout(type_paneLayout);
-        type_paneLayout.setHorizontalGroup(
-            type_paneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(type_paneLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(type_selector, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        type_paneLayout.setVerticalGroup(
-            type_paneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(type_selector, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
+        start_time_box.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Start Time:"));
 
-        owner_panel.setBorder(javax.swing.BorderFactory.createTitledBorder("Owner:"));
+        date_field.setMinimumSize(new java.awt.Dimension(100, 23));
+        date_field.setPreferredSize(new java.awt.Dimension(120, 23));
+        start_time_box.add(date_field);
+
+        calendar_button.setText("...");
+        start_time_box.add(calendar_button);
+
+        time_selector.setEditable(true);
+        time_selector.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        time_selector.setPreferredSize(new java.awt.Dimension(100, 23));
+        time_selector.setSize(new java.awt.Dimension(100, 23));
+        start_time_box.add(time_selector);
+
+        second_row.add(start_time_box);
+
+        done_box.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Done:"));
+        done_box.setMinimumSize(new java.awt.Dimension(50, 50));
+
+        complete_box.setSelected(true);
+        complete_box.setMargin(new java.awt.Insets(2, 10, 2, 10));
+        done_box.add(complete_box);
+
+        second_row.add(done_box);
+
+        summary_panel.add(second_row);
+
+        third_row.setLayout(new java.awt.GridLayout(1, 2));
+
+        duration_box.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Duration:"));
+
+        duration_field.setText("HOLD");
+        duration_field.setMinimumSize(new java.awt.Dimension(75, 23));
+        duration_box.add(duration_field);
+
+        duration_unit_selector.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "min", "hour", "day" }));
+        duration_unit_selector.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                duration_unit_selectorActionPerformed(evt);
+            }
+        });
+        duration_box.add(duration_unit_selector);
+
+        third_row.add(duration_box);
+
+        status_box.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Status:"));
+
+        status_selector.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        status_box.add(status_selector);
+
+        third_row.add(status_box);
+
+        summary_panel.add(third_row);
+
+        fourth_row.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Owner:"));
+        fourth_row.setLayout(new java.awt.BorderLayout());
 
         owner_selector.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        owner_selector.setBounds(new java.awt.Rectangle(6, 6, 6, 6));
+        fourth_row.add(owner_selector, java.awt.BorderLayout.CENTER);
 
-        javax.swing.GroupLayout owner_panelLayout = new javax.swing.GroupLayout(owner_panel);
-        owner_panel.setLayout(owner_panelLayout);
-        owner_panelLayout.setHorizontalGroup(
-            owner_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(owner_panelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(owner_selector, 0, 190, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        owner_panelLayout.setVerticalGroup(
-            owner_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(owner_selector, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
+        summary_panel.add(fourth_row);
 
-        project_pane.setBorder(javax.swing.BorderFactory.createTitledBorder("Project:"));
+        add(summary_panel);
+
+        info_panel.setPreferredSize(new java.awt.Dimension(360, 250));
+        info_panel.setLayout(new java.awt.BorderLayout());
+
+        jTabbedPane1.setMinimumSize(new java.awt.Dimension(350, 250));
+        jTabbedPane1.setPreferredSize(new java.awt.Dimension(350, 250));
+
+        info_box.setPreferredSize(new java.awt.Dimension(350, 235));
+
+        account_box.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Account:"));
+        account_box.setPreferredSize(new java.awt.Dimension(350, 50));
+        account_box.setLayout(new java.awt.BorderLayout());
+
+        account_selector.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        account_box.add(account_selector, java.awt.BorderLayout.CENTER);
+
+        project_box.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1), "Project:"));
+        project_box.setPreferredSize(new java.awt.Dimension(350, 50));
+        project_box.setLayout(new java.awt.BorderLayout());
 
         project_selector.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        project_box.add(project_selector, java.awt.BorderLayout.CENTER);
 
-        javax.swing.GroupLayout project_paneLayout = new javax.swing.GroupLayout(project_pane);
-        project_pane.setLayout(project_paneLayout);
-        project_paneLayout.setHorizontalGroup(
-            project_paneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(project_paneLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(project_selector, 0, 156, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        project_paneLayout.setVerticalGroup(
-            project_paneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, project_paneLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(project_selector, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-
-        location_panel.setBorder(javax.swing.BorderFactory.createTitledBorder("Location:"));
+        location_box.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1), "Location:"));
+        location_box.setPreferredSize(new java.awt.Dimension(170, 50));
+        location_box.setLayout(new java.awt.BorderLayout());
 
         location_selector.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        location_box.add(location_selector, java.awt.BorderLayout.CENTER);
 
-        javax.swing.GroupLayout location_panelLayout = new javax.swing.GroupLayout(location_panel);
-        location_panel.setLayout(location_panelLayout);
-        location_panelLayout.setHorizontalGroup(
-            location_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(location_panelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(location_selector, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        group_box.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1), "Group:"));
+        group_box.setPreferredSize(new java.awt.Dimension(170, 50));
+        group_box.setLayout(new java.awt.BorderLayout());
+
+        group_selector.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        group_box.add(group_selector, java.awt.BorderLayout.CENTER);
+
+        contact_box.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1), "Contact:"));
+        contact_box.setPreferredSize(new java.awt.Dimension(350, 50));
+        contact_box.setLayout(new java.awt.BorderLayout());
+
+        contact_selector.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        contact_box.add(contact_selector, java.awt.BorderLayout.CENTER);
+
+        javax.swing.GroupLayout info_boxLayout = new javax.swing.GroupLayout(info_box);
+        info_box.setLayout(info_boxLayout);
+        info_boxLayout.setHorizontalGroup(
+            info_boxLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(project_box, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
+            .addComponent(account_box, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(info_boxLayout.createSequentialGroup()
+                .addComponent(location_box, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(group_box, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(contact_box, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
-        location_panelLayout.setVerticalGroup(
-            location_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, location_panelLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(location_selector, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        info_boxLayout.setVerticalGroup(
+            info_boxLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, info_boxLayout.createSequentialGroup()
+                .addComponent(account_box, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(project_box, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(info_boxLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(location_box, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(group_box, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(contact_box, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(17, 17, 17))
         );
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(project_pane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(location_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(subject_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(date_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(duration_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(complete_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(description_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(account_panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(owner_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(type_pane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(button_panel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(subject_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(date_panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(duration_panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(complete_panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(account_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(owner_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(type_pane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(project_pane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(location_panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(description_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(button_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        jTabbedPane1.addTab("Info", info_box);
+
+        details_box.setLayout(new java.awt.BorderLayout());
+
+        details_scroll_pane.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        details_area.setColumns(20);
+        details_area.setRows(5);
+        details_scroll_pane.setViewportView(details_area);
+
+        details_box.add(details_scroll_pane, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("Details", details_box);
+
+        info_panel.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+
+        add(info_panel);
+
+        new_button.setText("New");
+        button_panel.add(new_button);
+
+        save_button.setText("Save");
+        button_panel.add(save_button);
+
+        cancel_button.setText("Cancel");
+        cancel_button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancel_buttonActionPerformed(evt);
+            }
+        });
+        button_panel.add(cancel_button);
+
+        add(button_panel);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void account_selectorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_account_selectorActionPerformed
+    private void subject_fieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subject_fieldActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_account_selectorActionPerformed
+    }//GEN-LAST:event_subject_fieldActionPerformed
 
+    private void duration_unit_selectorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_duration_unit_selectorActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_duration_unit_selectorActionPerformed
 
+    private void cancel_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancel_buttonActionPerformed
+        ActionEvent ae = new ActionEvent(cancel_button, 0, "RETURN");
+        button_clicked_listener.actionPerformed(ae);
+    }//GEN-LAST:event_cancel_buttonActionPerformed
+
+    //===========================================
+    // Pane Functions
+    //===========================================
+    
+    public void attachToClient(ActionListener client_listener)
+    {
+        button_clicked_listener = client_listener;
+    }
+
+    @Override
+    public void setApiController(Controller api)
+    {
+        api_controller = api;
+    }
+    
+    @Override
+    public void refresh(String task_id)
+    {
+        loadFields();
+    }
+            
+    //===========================================
+    // Screen Refesh Functions
+    //===========================================
+    
+    public void loadAccounts()
+    {
+        account_selector.removeAllItems();
+        
+        ArrayList<Account> account_list = api_controller.getAccounts();
+        
+        for(int i=0; i<account_list.size(); i++)
+        {
+            account_selector.addItem(account_list.get(i).name());
+        }
+    }
+    
+    public void loadFields()
+    {
+        // This function loads the fields that are not dependant
+        // on other values.
+        loadStatuses();
+        loadAccounts();
+        loadOwners();
+        loadTimes(30);
+        
+        resetGroups();
+        resetLocations();
+        resetProjects();
+    }
+    
+    public void loadLocations(String account)
+    {
+        resetLocations();
+        
+        // Get active (TRUE) locations for account
+        ArrayList<Location> location_list = api_controller.getLocations(account, true);
+        
+        for(int i=0; i<location_list.size(); i++)
+        {
+            location_selector.addItem(location_list.get(i).name());
+        }
+    }
+    
+    public void loadOwners()
+    {
+        owner_selector.removeAllItems();
+        
+        ArrayList<Contact> user_list = api_controller.getUsers();
+        
+        for(int i=0; i<user_list.size(); i++)
+        {
+            owner_selector.addItem(user_list.get(i).fullName());
+        }
+    }
+    
+    public void loadProjects(String account)
+    {
+        resetProjects();
+        
+        // Get active (TRUE) projects for account
+        ArrayList<Project> project_list = api_controller.getProjects(account, true);
+        
+        for(int i=0; i<project_list.size(); i++)
+        {
+            project_selector.addItem(project_list.get(i).name());
+        }
+    }
+    
+    public void loadStatuses()
+    {
+        status_selector.removeAllItems();
+        
+        for(TaskStatus status : TaskStatus.values())
+        {
+            status_selector.addItem(status.toString());
+        }
+    }
+    
+    public void loadTimes(int rate)
+    {
+        DateTimeFormatter time_format = DateTimeFormatter.ofPattern("hh:mma");
+        LocalTime time = LocalTime.parse("00:00");
+        
+        time_selector.removeAllItems();
+        
+        do
+        {
+            time_selector.addItem(time.format(time_format));
+            
+            time = time.plusMinutes(rate);
+        
+        // Relying on the loop function of adding time.
+        // Once we go back to 00:00 exit the loop.
+        } while(time.isAfter(LocalTime.parse("00:04")));
+    }
+    
+    public void resetGroups()
+    {
+        group_selector.removeAllItems();
+        
+        group_selector.addItem("[none]");
+    }
+    
+    public void resetLocations()
+    {
+        location_selector.removeAllItems();
+        
+        location_selector.addItem("[none]");
+    }
+    
+    public void resetProjects()
+    {
+        project_selector.removeAllItems();
+        
+        project_selector.addItem("[none]");
+    }
+    
+    //===========================================
+    // Variable Declarations
+    //===========================================
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel account_panel;
+    private javax.swing.JPanel account_box;
     private javax.swing.JComboBox<String> account_selector;
     private javax.swing.JPanel button_panel;
+    private javax.swing.JButton calendar_button;
     private javax.swing.JButton cancel_button;
-    private javax.swing.JCheckBox complete_marker;
-    private javax.swing.JPanel complete_panel;
+    private javax.swing.JCheckBox complete_box;
+    private javax.swing.JPanel contact_box;
+    private javax.swing.JComboBox<String> contact_selector;
     private javax.swing.JTextField date_field;
-    private javax.swing.JPanel date_panel;
-    private javax.swing.JTextArea description_area;
-    private javax.swing.JPanel description_panel;
-    private javax.swing.JScrollBar description_scrollbar;
+    private javax.swing.JTextArea details_area;
+    private javax.swing.JPanel details_box;
+    private javax.swing.JScrollPane details_scroll_pane;
+    private javax.swing.JPanel done_box;
+    private javax.swing.JPanel duration_box;
     private javax.swing.JTextField duration_field;
-    private javax.swing.JPanel duration_panel;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JToolBar jToolBar1;
-    private javax.swing.JPanel location_panel;
+    private javax.swing.JComboBox<String> duration_unit_selector;
+    private javax.swing.JPanel first_row;
+    private javax.swing.JPanel fourth_row;
+    private javax.swing.JPanel group_box;
+    private javax.swing.JComboBox<String> group_selector;
+    private javax.swing.JPanel info_box;
+    private javax.swing.JPanel info_panel;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JPanel location_box;
     private javax.swing.JComboBox<String> location_selector;
     private javax.swing.JButton new_button;
-    private javax.swing.JPanel owner_panel;
     private javax.swing.JComboBox<String> owner_selector;
-    private javax.swing.JPanel project_pane;
+    private javax.swing.JPanel project_box;
     private javax.swing.JComboBox<String> project_selector;
     private javax.swing.JButton save_button;
+    private javax.swing.JPanel second_row;
+    private javax.swing.JPanel start_time_box;
+    private javax.swing.JPanel status_box;
+    private javax.swing.JComboBox<String> status_selector;
+    private javax.swing.JPanel subject_box;
     private javax.swing.JTextField subject_field;
-    private javax.swing.JPanel subject_panel;
-    private javax.swing.JPanel type_pane;
-    private javax.swing.JComboBox<String> type_selector;
+    private javax.swing.JPanel summary_panel;
+    private javax.swing.JPanel third_row;
+    private javax.swing.JComboBox<String> time_selector;
     // End of variables declaration//GEN-END:variables
+
+    private ActionListener button_clicked_listener;
+    private ArrayList<Contact> contact_list;
+    private Controller api_controller;
+    private ArrayList<Task> task_list;
 }

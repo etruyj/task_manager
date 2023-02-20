@@ -76,7 +76,7 @@ public class TaskItem extends JLabel
         });
         
         // Configure JLabel
-        this.setText(time + " " + summary);
+        this.setText(time + "\t" + summary);
         this.setForeground(task_status.color());
     }
     
@@ -93,8 +93,10 @@ public class TaskItem extends JLabel
     
     private String convertDateStamp(String start_date)
     {
-        LocalDateTime time = LocalDateTime.parse(start_date);
+        DateTimeFormatter psql_format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         DateTimeFormatter output_format = DateTimeFormatter.ofPattern("HH:mma");
+        LocalDateTime time = LocalDateTime.parse(start_date, psql_format);
+
         
         return time.format(output_format);
     }
