@@ -60,13 +60,13 @@ public class ListTasks
 
 				task.setId(rs.getString(1))
 					.setSubject(rs.getString(2))
-					.setDescriptionId(rs.getString(3))
+					.setDescription(rs.getString(3))
 					.setStatus(rs.getString(4))
 					.setStartTime(rs.getString(5))
 					.setDuration(rs.getInt(6))
-					.setAccountId(rs.getString(7))
-					.setLocationId(rs.getString(8))
-					.setProjectId(rs.getString(9));
+					.setAccount(rs.getString(7))
+					.setLocation(rs.getString(8))
+					.setProject(rs.getString(9));
 
 				task_list.add(task);
 			}

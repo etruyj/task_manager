@@ -12,14 +12,13 @@ public class Task
 	String id;
 	String subject;
 	String description;
-	String description_id;
 	String start_time;
 	Integer duration;
 	TaskStatus status;
-	String account_id;
-	String contact_id;
-	String location_id;
-	String project_id;
+	String account;
+	String contact;
+	String location;
+	String project;
 	String recurrance_id;
 	boolean automate;
 
@@ -27,15 +26,14 @@ public class Task
 	// Getters
 	//=======================================
 
-	public String accountId() { return account_id; }
+	public String account() { return account; }
 	public boolean automate() { return automate; }
-	public String contactId() { return contact_id; }
+	public String contact() { return contact; }
 	public String description() { return description; }
-	public String descriptionId() { return description_id; }
 	public Integer duration() { return duration; }
 	public String id() { return id; }
-	public String locationId() { return location_id; }
-	public String projectId() { return project_id; }
+	public String location() { return location; }
+	public String project() { return project; }
 	public String recurranceId() { return recurrance_id; }
 	public String startTime() { return start_time; }
 	public TaskStatus status() { return status; }
@@ -45,9 +43,9 @@ public class Task
 	// Setters
 	//=======================================
 	
-	public Task setAccountId(String s)
+	public Task setAccount(String s)
 	{
-		account_id = s;
+		account = s;
 		return this;
 	}
 
@@ -57,22 +55,15 @@ public class Task
 		return this;
 	}
 
-	public Task setContactId(String s)
+	public Task setContact(String s)
 	{
-		contact_id = s;
+		contact = s;
 		return this;
 	}
 
 	public Task setDescription(String s)
 	{
 		description = s;
-		return this;
-	}
-
-	public Task setDescriptionId(String s)
-	{
-		description_id = s;
-		description = null;
 		return this;
 	}
 
@@ -88,15 +79,15 @@ public class Task
 		return this;
 	}
 
-	public Task setLocationId(String s)
+	public Task setLocation(String s)
 	{
-		location_id = s;
+		location = s;
 		return this;
 	}
 
-	public Task setProjectId(String s)
+	public Task setProject(String s)
 	{
-		project_id = s;
+		project = s;
 		return this;
 	}
 

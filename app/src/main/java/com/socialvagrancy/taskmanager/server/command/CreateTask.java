@@ -22,7 +22,7 @@ public class CreateTask
 {
 	public static void deleteTask(Task task, UUID org_id, PostgresConnector psql, Logger logbook)
 	{
-		logbook.WARN("Deleting task [" + org_id + ":" + task.accountId() + ":task/" + task.id() +"]: " + task.subject());
+		logbook.WARN("Deleting task [" + org_id + ":" + task.account() + ":task/" + task.id() +"]: " + task.subject());
 
 		String query = "DELETE FROM task " 
 				+ "WHERE id=? AND organization_id=?;";
@@ -39,7 +39,7 @@ public class CreateTask
 		catch(SQLException e)
 		{
 			logbook.ERR(e.getMessage());
-			logbook.ERR("Unable to delete task [" + org_id + ":" + task.accountId() + ":task/" + task.id() + "]: " + task.subject());
+			logbook.ERR("Unable to delete task [" + org_id + ":" + task.account() + ":task/" + task.id() + "]: " + task.subject());
 		}
 	}
 
@@ -55,40 +55,40 @@ public class CreateTask
 			pst.setString(2, task.subject());
 			
 			// Allow for no assigned description
-			if(task.descriptionId() == null)
+			if(task.description() == null)
 			{
 				pst.setObject(3, null);
 			}
 			else
 			{
-				pst.setObject(3, UUID.fromString(task.descriptionId()));
+				pst.setObject(3, UUID.fromString(task.description()));
 			}
 
 			pst.setTimestamp(4, Timestamp.valueOf(task.startTime()));
 			pst.setInt(5, task.duration());
 			pst.setObject(6, task.status(), Types.OTHER);
 			pst.setObject(7, UUID.fromString(org_id));
-			pst.setObject(8, UUID.fromString(task.accountId()));
-			pst.setObject(9, UUID.fromString(task.contactId()));
+			pst.setObject(8, UUID.fromString(task.account()));
+			pst.setObject(9, UUID.fromString(task.contact()));
 			
 			// Allow for no assigned location
-			if(task.locationId() == null)
+			if(task.location() == null)
 			{
 				pst.setObject(10, null);
 			}
 			else
 			{
-				pst.setObject(10, UUID.fromString(task.locationId()));
+				pst.setObject(10, UUID.fromString(task.location()));
 			}
 			
 			// Allow for no assigned project
-			if(task.projectId() == null)
+			if(task.project() == null)
 			{
 				pst.setObject(11, null);
 			}
 			else
 			{
-				pst.setObject(11, UUID.fromString(task.projectId()));
+				pst.setObject(11, UUID.fromString(task.project()));
 			}
 
 			// Allow for no assigned recurrance
@@ -144,11 +144,11 @@ public class CreateTask
 		{
 			throw new Exception("Required field: duration is not specified.");
 		}
-		else if(task.accountId() == null)
+		else if(task.account() == null)
 		{
 			throw new Exception("Required field: account_id is not specified.");
 		}
-		else if(task.contactId() == null)
+		else if(task.contact() == null)
 		{
 			throw new Exception("Required field: contact_id is not specified.");
 		}
@@ -176,7 +176,7 @@ public class CreateTask
 			{
 				UUID text_id = AddText.insertNew(task.description(), UUID.fromString(org_id), psql, logbook);
 
-				task.setDescriptionId(text_id.toString());
+				task.setDescription(text_id.toString());
 			}
 
 			insertNew(task, org_id, psql, logbook);
@@ -185,13 +185,13 @@ public class CreateTask
 		}
 		catch(Exception e)
 		{
-			if(task.descriptionId() != null)
+			if(task.description() != null)
 			{
-				AddText.deleteText(UUID.fromString(task.descriptionId()), UUID.fromString(org_id), psql, logbook);
+				AddText.deleteText(UUID.fromString(task.description()), UUID.fromString(org_id), psql, logbook);
 			}
 
 			logbook.ERR(e.getMessage());
-			throw new Exception("Unable to create task [" + org_id + ":" + task.accountId() + ":" + task.id() + "]: " + task.subject());
+			throw new Exception("Unable to create task [" + org_id + ":" + task.account() + ":" + task.id() + "]: " + task.subject());
 		}
 	}
 }
