@@ -27,7 +27,7 @@ public class GetTask
 			+ "INNER JOIN location ON location.id = task.location_id "
 			+ "INNER JOIN project ON project.id = task.project_id "
 			+ "INNER JOIN text ON text.id = task.text_id "
-			+ "WHERE task.id=? AND organization_id=?;";
+			+ "WHERE task.id=? AND task.organization_id=?;";
 
 		try
 		{

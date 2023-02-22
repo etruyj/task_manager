@@ -14,6 +14,7 @@ import com.socialvagrancy.taskmanager.structure.TaskStatus;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -380,6 +381,14 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
     public void refresh(String task_id)
     {
         loadFields();
+        
+        if(task_id.equals("NEW"))
+        {
+        }
+        else if(task_id != null)
+        {
+            loadForm(task_id);
+        }
     }
             
     //===========================================
@@ -428,6 +437,21 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
     public void loadForm(String id)
     {
         task = api_controller.getSingleTask(id);
+        
+        if(task != null)
+        {
+            // Parse the task time.
+            DateTimeFormatter psql_format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            DateTimeFormatter date_format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            DateTimeFormatter time_format = DateTimeFormatter.ofPattern("hh:mma");
+            LocalDateTime date_time = LocalDateTime.parse(task.startTime());
+        
+            subject_field.setText(task.subject());
+            date_field.setText(date_time.format(date_format));
+            time_selector.setSelectedItem(date_time.format(time_format));
+            status_selector.setSelectedItem(task.status());
+        }
+        
     }
     
     public void loadLocations(String account)
