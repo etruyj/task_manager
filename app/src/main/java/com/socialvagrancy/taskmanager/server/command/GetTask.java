@@ -35,7 +35,7 @@ public class GetTask
 
 			PreparedStatement pst = psql.prepare(query, logbook);
 
-			pst.setString(1, id);
+			pst.setObject(1, UUID.fromString(id));
 			pst.setObject(2, UUID.fromString(org_id));
 
 			ResultSet rs = pst.executeQuery();
