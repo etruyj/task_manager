@@ -42,15 +42,16 @@ public class GetTask
 
 			if(rs.next())
 			{
-				task.setAccount(rs.getString("account"));
-				task.setContact(rs.getString("last_name") + ", " + rs.getString("first_name"));
-				task.setDuration(rs.getInt("duration"));
-				task.setId(rs.getString("task_id"));
-				task.setLocation(rs.getString("location"));
-				task.setProject(rs.getString("project"));
-				task.setStartTime(rs.getString("start_time"));
-				task.setStatus(rs.getString("status"));
-				task.setSubject(rs.getString("subject"));
+				task.setId(rs.getString(1));
+				task.setSubject(rs.getString(2));
+				task.setStartTime(rs.getString(3));
+				task.setStatus(rs.getString(4));
+				task.setDuration(rs.getInt(5));
+				task.setDescription(rs.getString(6));
+				task.setAccount(rs.getString(7));
+				task.setContact(rs.getString(9) + ", " + rs.getString(8));
+				task.setLocation(rs.getString(10));
+				task.setProject(rs.getString(10));
 				
 			}
 
