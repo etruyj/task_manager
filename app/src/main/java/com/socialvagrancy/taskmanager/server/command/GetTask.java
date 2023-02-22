@@ -55,7 +55,7 @@ public class GetTask
 				
 			}
 
-			System.err.println(rs);
+			System.err.println(pst);
 
 			return task;
 		}
