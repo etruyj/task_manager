@@ -23,10 +23,10 @@ public class GetTask
 
 		String query = "SELECT task.id AS task_id, task.subject AS subject, task.start_time, task.status, task.duration, text.text AS description, account.name AS account, contact.first_name, contact.last_name, location.name AS location, project.name AS project FROM task " 
 			+ "INNER JOIN account ON account.id = task.account_id "
-			+ "INNER JOIN contact ON contact.id = task.contact_id "
-			+ "INNER JOIN location ON location.id = task.location_id "
-			+ "INNER JOIN project ON project.id = task.project_id "
-			+ "INNER JOIN text ON text.id = task.text_id "
+			+ "LEFT JOIN contact ON contact.id = task.contact_id "
+			+ "LEFT JOIN location ON location.id = task.location_id "
+			+ "LEFT JOIN project ON project.id = task.project_id "
+			+ "LEFT JOIN text ON text.id = task.text_id "
 			+ "WHERE task.id=? AND task.organization_id=?;";
 
 		try
