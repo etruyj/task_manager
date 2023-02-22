@@ -55,6 +55,8 @@ public class GetTask
 				
 			}
 
+			System.err.println(rs);
+
 			return task;
 		}
 		catch(SQLException e)
