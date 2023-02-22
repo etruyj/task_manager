@@ -752,6 +752,7 @@ public class TaskManagerAPI
 			response.setMessage("Unable to list tasks. Not enough information specified.");
 		}
 
+
 		return gson.toJson(response);
 	}
 
@@ -759,7 +760,7 @@ public class TaskManagerAPI
 	@Path("/tasks/{task}")
 	@Consumes("application/json")
 	@Produces("application/json")
-	public String getTask(@PathParam("task") String task_id, @HeaderParam("authorization") String auth_token)
+	public String getTask(@PathParam("task") String task_id, @HeaderParam("Authorization") String auth_token)
 	{
 		Logger logbook = (Logger) config.getProperty("logger");
 		PostgresConnector psql = (PostgresConnector) config.getProperty("database");
