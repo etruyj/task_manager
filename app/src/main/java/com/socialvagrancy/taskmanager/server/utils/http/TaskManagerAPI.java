@@ -765,8 +765,8 @@ public class TaskManagerAPI
 		PostgresConnector psql = (PostgresConnector) config.getProperty("database");
 
 		Gson gson = new Gson();
-		ServerResonse response = new ServerResponse();
-		PermissionLevel min_required = PermissionLevel.AccountUser;
+		ServerResponse response = new ServerResponse();
+		PermissionLevel min_required = PermissionLevel.ACCOUNT_USER;
 
 		logbook.info("Servicing request: GET /tasks/" + task_id);
 
@@ -774,11 +774,11 @@ public class TaskManagerAPI
 		
 		try
 		{
-			creds = ValidateToken.generateToken(auth_token, psql, logbook);
+			creds = ValidateToken.generateCredentials(auth_token, psql, logbook);
 
 			if(min_required.checkPermissions(creds.permissions()))
 			{
-				Task task = GetTask.byId(task_id, creds.organization(), psql, logbook);
+				Task task = GetTask.withId(task_id, creds.organization(), psql, logbook);
 
 				logbook.info("Found task " + task_id);
 
@@ -786,7 +786,7 @@ public class TaskManagerAPI
 			}
 			else
 			{
-				logbook.ERROR("Insufficient privileges. Unable to access /tasks/" + task_id);
+				logbook.error("Insufficient privileges. Unable to access /tasks/" + task_id);
 				response.setMessage("Insufficient privileges to access /tasks/" + task_id);
 			}
 		}
@@ -794,7 +794,7 @@ public class TaskManagerAPI
 		{
 			if(creds == null)
 			{
-				logbook.ERROR("ILLEGAL ACCESS ATTEMPT! /tasks/" + task_id);
+				logbook.error("ILLEGAL ACCESS ATTEMPT! /tasks/" + task_id);
 				response.setMessage("ILLEGAL ACCESS ATTEMPT! /tasks/" + task_id);
 			}
 		}
