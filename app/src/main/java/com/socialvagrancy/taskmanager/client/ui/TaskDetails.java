@@ -29,7 +29,7 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
      */
     public TaskDetails() {
         initComponents();
-        
+    
         //=======================================
         // Add action listeners
         //=======================================
@@ -44,6 +44,7 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
                 {
                     loadProjects(account_selector.getSelectedItem().toString());
                     loadLocations(account_selector.getSelectedItem().toString());
+                    loadContacts(account_selector.getSelectedItem().toString());
                 }
             }
         });
@@ -103,7 +104,7 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
         complete_box = new javax.swing.JCheckBox();
         third_row = new javax.swing.JPanel();
         duration_box = new javax.swing.JPanel();
-        duration_field = new javax.swing.JTextField();
+        duration_spinner = new javax.swing.JSpinner();
         duration_unit_selector = new javax.swing.JComboBox<>();
         status_box = new javax.swing.JPanel();
         status_selector = new javax.swing.JComboBox<>();
@@ -187,9 +188,8 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
 
         duration_box.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Duration:"));
 
-        duration_field.setText("HOLD");
-        duration_field.setMinimumSize(new java.awt.Dimension(75, 23));
-        duration_box.add(duration_field);
+        duration_spinner.setModel(new javax.swing.SpinnerNumberModel(5, 0, null, 1));
+        duration_box.add(duration_spinner);
 
         duration_unit_selector.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "min", "hour", "day" }));
         duration_unit_selector.addActionListener(new java.awt.event.ActionListener() {
@@ -310,9 +310,19 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
         add(info_panel);
 
         new_button.setText("New");
+        new_button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                new_buttonActionPerformed(evt);
+            }
+        });
         button_panel.add(new_button);
 
         save_button.setText("Save");
+        save_button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                save_buttonActionPerformed(evt);
+            }
+        });
         button_panel.add(save_button);
 
         cancel_button.setText("Cancel");
@@ -338,6 +348,18 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
         ActionEvent ae = new ActionEvent(cancel_button, 0, "RETURN");
         button_clicked_listener.actionPerformed(ae);
     }//GEN-LAST:event_cancel_buttonActionPerformed
+
+    private void new_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_new_buttonActionPerformed
+        ActionEvent ae = new ActionEvent(new_button, 0, "TASK_DETAILS:NEW");
+        button_clicked_listener.actionPerformed(ae);
+    }//GEN-LAST:event_new_buttonActionPerformed
+
+    private void save_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_save_buttonActionPerformed
+        System.err.println("CODE TO SAVE TASK IS NOT INCLUDED");
+        
+        ActionEvent ae = new ActionEvent(save_button, 0, "TASK_LIST");
+        button_clicked_listener.actionPerformed(ae);
+    }//GEN-LAST:event_save_buttonActionPerformed
 
     //===========================================
     // Pane Functions
@@ -376,6 +398,18 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
         }
     }
     
+    public void loadContacts(String account)
+    {
+        resetContacts();
+        
+        ArrayList<Contact> contact_list = api_controller.getContacts(account, true);
+        
+        for(int i=0; i<contact_list.size(); i++)
+        {
+            contact_selector.addItem(contact_list.get(i).fullName());
+        }
+    }
+    
     public void loadFields()
     {
         // This function loads the fields that are not dependant
@@ -385,9 +419,15 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
         loadOwners();
         loadTimes(30);
         
+        resetContacts();
         resetGroups();
         resetLocations();
         resetProjects();
+    }
+    
+    public void loadForm(String id)
+    {
+        task = api_controller.getSingleTask(id);
     }
     
     public void loadLocations(String account)
@@ -456,6 +496,13 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
         } while(time.isAfter(LocalTime.parse("00:04")));
     }
     
+    public void resetContacts()
+    {
+        contact_selector.removeAllItems();
+        
+        contact_selector.addItem("[none]");
+    }
+    
     public void resetGroups()
     {
         group_selector.removeAllItems();
@@ -496,7 +543,7 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
     private javax.swing.JScrollPane details_scroll_pane;
     private javax.swing.JPanel done_box;
     private javax.swing.JPanel duration_box;
-    private javax.swing.JTextField duration_field;
+    private javax.swing.JSpinner duration_spinner;
     private javax.swing.JComboBox<String> duration_unit_selector;
     private javax.swing.JPanel first_row;
     private javax.swing.JPanel fourth_row;
@@ -527,4 +574,5 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
     private ArrayList<Contact> contact_list;
     private Controller api_controller;
     private ArrayList<Task> task_list;
+    private Task task;
 }

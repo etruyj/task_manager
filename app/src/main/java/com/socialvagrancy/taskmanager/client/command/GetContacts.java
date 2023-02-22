@@ -12,11 +12,47 @@ import com.socialvagrancy.utils.Logger;
 import com.socialvagrancy.utils.http.RestApi;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 
 import java.util.ArrayList;
 
 public class GetContacts
 {
+    public static ArrayList<Contact> byStatus(String base_url, String account, boolean status, String token, RestApi api, Logger logbook) throws Exception
+    {
+        Gson gson = new Gson();
+        
+        ArrayList<Contact> contact_list = new ArrayList<Contact>();
+        
+        String api_url = ApiUrls.listContacts(base_url, account, status);
+        
+        logbook.debug("GET " + api_url);
+        
+        String response = api.get(api_url, token);
+        
+        logbook.debug(response);
+        
+        try
+        {
+            Contact[] contacts = gson.fromJson(response, Contact[].class);
+            
+            for(int i=0; i<contacts.length; i++)
+            {
+                contact_list.add(contacts[i]);
+            }
+            
+            logbook.info("Found (" + contact_list.size() + ") contacts.");
+            
+            return contact_list;
+        }
+        catch(JsonParseException e)
+        {
+            logbook.error(e.getMessage());
+            
+            throw new Exception("Unable to retrieve contacts for account " + account);
+        }
+    }
+    
     public static ArrayList<Contact> users(String base_url, String token, RestApi api, Logger logbook) throws Exception
     {
         Gson gson = new Gson();

@@ -55,6 +55,22 @@ public class Controller
 		}
 	}
 
+        public ArrayList<Contact> getContacts(String account, boolean status)
+        {
+            try
+            {
+                ArrayList<Contact> contact_list = GetContacts.byStatus(base_url, account, status, token, api, logbook);
+         
+                return contact_list;
+            }
+            catch(Exception e)
+            {
+                logbook.error(e.getMessage());
+                
+                return new ArrayList<Contact>();
+            }
+        }
+        
         public ArrayList<Location> getLocations(String account, boolean status)
         {
             try
@@ -100,6 +116,22 @@ public class Controller
                 logbook.error(e.getMessage());
             
                 return new ArrayList<Task>();
+            }
+        }
+        
+        public Task getSingleTask(String id)
+        {
+            try
+            {
+                Task task = GetTasks.byId(base_url, id, token, api, logbook);
+                
+                return task;
+            }
+            catch(Exception e)
+            {
+                logbook.error(e.getMessage());
+                
+                return new Task();
             }
         }
         

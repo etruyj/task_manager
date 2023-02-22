@@ -24,6 +24,34 @@ import java.util.ArrayList;
 
 public class GetTasks
 {
+        public static Task byId(String base_url, String id, String token, RestApi api, Logger logbook) throws Exception
+        {
+            Gson gson = new Gson();
+            
+            String api_url = ApiUrls.getTask(base_url, id);
+            
+            logbook.debug("GET " + api_url);
+            
+            String response = api.get(api_url, token);
+            
+            logbook.debug(response);
+            
+            try
+            {
+                Task task = gson.fromJson(response, Task.class);
+                
+                logbook.info("Found task: " + id);
+                
+                return task;
+            }
+            catch(JsonParseException e)
+            {
+                logbook.error(e.getMessage());
+                
+                throw new Exception("Unable to parse payload returned for " + api_url);
+            }
+        }
+        
 	public static ArrayList<Task> forDay(String base_url, String contact, String date, String token, RestApi api, Logger logbook) throws Exception
 	{
 		Gson gson = new Gson();
