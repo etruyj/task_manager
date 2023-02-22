@@ -32,6 +32,7 @@ import com.socialvagrancy.taskmanager.server.command.CreateLocation;
 import com.socialvagrancy.taskmanager.server.command.CreateProject;
 import com.socialvagrancy.taskmanager.server.command.CreateTask;
 import com.socialvagrancy.taskmanager.server.command.GenerateToken;
+import com.socialvagrancy.taskmanager.server.command.GetTask;
 import com.socialvagrancy.taskmanager.server.command.ListAccounts;
 import com.socialvagrancy.taskmanager.server.command.ListContacts;
 import com.socialvagrancy.taskmanager.server.command.ListLocations;
@@ -749,6 +750,53 @@ public class TaskManagerAPI
 		{
 			logbook.ERR("Unable to list tasks. Not enough information specified.");
 			response.setMessage("Unable to list tasks. Not enough information specified.");
+		}
+
+		return gson.toJson(response);
+	}
+
+	@GET
+	@Path("/tasks/{task}")
+	@Consumes("application/json")
+	@Produces("application/json")
+	public String getTask(@PathParam("task") String task_id, @HeaderParam("authorization") String auth_token)
+	{
+		Logger logbook = (Logger) config.getProperty("logger");
+		PostgresConnector psql = (PostgresConnector) config.getProperty("database");
+
+		Gson gson = new Gson();
+		ServerResonse response = new ServerResponse();
+		PermissionLevel min_required = PermissionLevel.AccountUser;
+
+		logbook.info("Servicing request: GET /tasks/" + task_id);
+
+		Credential creds = null;
+		
+		try
+		{
+			creds = ValidateToken.generateToken(auth_token, psql, logbook);
+
+			if(min_required.checkPermissions(creds.permissions()))
+			{
+				Task task = GetTask.byId(task_id, creds.organization(), psql, logbook);
+
+				logbook.info("Found task " + task_id);
+
+				return gson.toJson(task);
+			}
+			else
+			{
+				logbook.ERROR("Insufficient privileges. Unable to access /tasks/" + task_id);
+				response.setMessage("Insufficient privileges to access /tasks/" + task_id);
+			}
+		}
+		catch(Exception e)
+		{
+			if(creds == null)
+			{
+				logbook.ERROR("ILLEGAL ACCESS ATTEMPT! /tasks/" + task_id);
+				response.setMessage("ILLEGAL ACCESS ATTEMPT! /tasks/" + task_id);
+			}
 		}
 
 		return gson.toJson(response);
