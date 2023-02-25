@@ -39,15 +39,6 @@ public class ListTasks
 			// Convert the contact name to the UUID which is what is used to search for tasks.
 			String contact_id = ConvertContact.fullnameToUUID(contact, org_id, psql, logbook);
 
-			// Convert the yyyy-MM-ddTHH:mm:ss timestamp
-			// passed by the client to a parseable format
-			// yy-MM-dd HH:mm:ss
-			/*
-			 * Mark for deletion
-			String start = ConvertDate.timestampToPsql(range_start);
-			String end = ConvertDate.timestampToPsql(range_end);
-			*/
-
 			PreparedStatement pst = psql.prepare(query, logbook);
 
 			pst.setObject(1, UUID.fromString(contact_id));
