@@ -8,6 +8,10 @@
 package com.socialvagrancy.taskmanager.server.command;
 
 import com.socialvagrancy.taskmanager.server.utils.database.PostgresConnector;
+import com.socialvagrancy.taskmanager.server.utils.lookup.AccountId;
+import com.socialvagrancy.taskmanager.server.utils.lookup.ContactId;
+import com.socialvagrancy.taskmanager.server.utils.lookup.LocationId;
+import com.socialvagrancy.taskmanager.server.utils.lookup.ProjectId;
 import com.socialvagrancy.taskmanager.structure.Task;
 import com.socialvagrancy.taskmanager.structure.TaskStatus;
 import com.socialvagrancy.utils.Logger;
@@ -49,6 +53,29 @@ public class CreateTask
 
 		try
 		{
+			// Convert human readable names to ids.
+			task.setAccount(AccountId.fromName(task.account(), org_id, psql, logbook));
+			task.setContact(ContactId.fromName(task.contact(), task.account(), org_id, psql, logbook));
+			
+			if(!task.project().equals("[none]"))
+			{
+				task.setProject(ProjectId.fromName(task.project(), task.account(), org_id, psql, logbook));
+			}
+			else
+			{
+				task.setProject(null);
+			}
+
+			if(!task.location().equals("[none]"))
+			{
+				task.setLocation(LocationId.fromName(task.location(), task.account(), org_id, psql, logbook));
+			}
+			else
+			{
+				task.setLocation(null);
+			}
+
+			// Insert the account info
 			PreparedStatement pst = psql.prepare(query, logbook);
 
 			pst.setObject(1, UUID.fromString(task.id()));
@@ -103,6 +130,8 @@ public class CreateTask
 
 			pst.setBoolean(13, task.automate());
 			
+			logbook.debug(pst.toString());
+
 			pst.executeUpdate();
 	
 			return task;

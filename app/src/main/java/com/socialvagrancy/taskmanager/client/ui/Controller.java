@@ -12,6 +12,7 @@ import com.socialvagrancy.taskmanager.client.command.GetLocations;
 import com.socialvagrancy.taskmanager.client.command.GetProjects;
 import com.socialvagrancy.taskmanager.client.command.GetTasks;
 import com.socialvagrancy.taskmanager.client.command.Login;
+import com.socialvagrancy.taskmanager.client.command.SaveTask;
 import com.socialvagrancy.taskmanager.structure.Account;
 import com.socialvagrancy.taskmanager.structure.Contact;
 import com.socialvagrancy.taskmanager.structure.Location;
@@ -168,4 +169,20 @@ public class Controller
 			throw new Exception("Unable to login with specified credentials.");
 		}
 	}
+        
+        public String saveTask(Task task) throws Exception
+        {
+            try
+            {
+                Task saved = SaveTask.task(task, base_url, token, api, logbook);
+                
+                return saved.id();
+            }
+            catch(Exception e)
+            {
+                logbook.error(e.getMessage());
+                
+                return "";
+            }
+        }
 }

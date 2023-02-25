@@ -17,7 +17,8 @@ public class UtcDate
 	public static String localToUtc(String timestamp)
 	{
 		String utc_zone = "UTC";
-		LocalDateTime local = LocalDateTime.parse(timestamp);
+		DateTimeFormatter client_format = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mma");
+                LocalDateTime local = LocalDateTime.parse(timestamp, client_format);
 		
 		ZonedDateTime utc_time = ZonedDateTime.of(local, ZoneId.systemDefault());
 

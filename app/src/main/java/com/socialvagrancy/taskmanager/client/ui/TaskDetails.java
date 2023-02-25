@@ -18,6 +18,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 /**
  *
  * @author seans
@@ -31,6 +33,13 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
     public TaskDetails() {
         initComponents();
     
+        //=======================================
+        // Variable declaration
+        //=======================================
+        psql_format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        date_format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        time_format = DateTimeFormatter.ofPattern("hh:mma");
+        
         //=======================================
         // Add action listeners
         //=======================================
@@ -189,7 +198,7 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
 
         duration_box.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Duration:"));
 
-        duration_spinner.setModel(new javax.swing.SpinnerNumberModel(5, 0, null, 1));
+        duration_spinner.setModel(new javax.swing.SpinnerNumberModel(5.0f, 0.0f, null, 1.0f));
         duration_box.add(duration_spinner);
 
         duration_unit_selector.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "min", "hour", "day" }));
@@ -356,10 +365,20 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
     }//GEN-LAST:event_new_buttonActionPerformed
 
     private void save_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_save_buttonActionPerformed
-        System.err.println("CODE TO SAVE TASK IS NOT INCLUDED");
+        populateTask();
         
-        ActionEvent ae = new ActionEvent(save_button, 0, "TASK_LIST");
-        button_clicked_listener.actionPerformed(ae);
+        try
+        {
+            String task_id = api_controller.saveTask(task);
+                        
+            ActionEvent ae = new ActionEvent(save_button, 0, "RETURN");
+            button_clicked_listener.actionPerformed(ae);
+        }
+        catch(Exception e)
+        {
+            System.err.println(e.getMessage());
+        }
+
     }//GEN-LAST:event_save_buttonActionPerformed
 
     //===========================================
@@ -384,16 +403,79 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
         
         if(task_id.equals("NEW"))
         {
+            populateNew();
         }
         else if(task_id != null)
         {
-            loadForm(task_id);
+            populateForm(task_id);
         }
     }
             
     //===========================================
     // Screen Refesh Functions
     //===========================================
+    
+    private void addToSelector(JComboBox selector, String value)
+    {
+        selector.addItem(value);
+        selector.setSelectedItem(value);
+    }
+    
+    private int convertDurationToInt(float number, String unit)
+    {
+        int duration = 0;
+        
+        switch(unit)
+        {
+            case "min":
+                duration = (int)number;
+                break;
+            case "hour":
+                duration = (int)(number * 60);
+                break;
+            case "day":
+                duration = (int)(number * 60 * 24);
+                break;
+        }
+        
+        return duration;
+    }
+    
+    private String convertDurationToString(int minutes)
+    {
+        float number;
+        String units;
+        
+        if(minutes >= 360 && minutes % 360 == 0)
+        {
+            number = (float)minutes / 1440;
+            units = "day";
+        }
+        else if(minutes >= 60 && minutes % 15 == 0)
+        {
+            number = (float)minutes / 60;
+            units = "hour";
+        }
+        else
+        {
+            number = (float)minutes;
+            units = "min";
+        }
+        
+        return String.valueOf(number) + " " + units;
+    }
+    
+    private boolean inSelector(JComboBox selector, String value)
+    {
+        if(((DefaultComboBoxModel)selector.getModel()).getIndexOf(value) == -1)
+        {
+            return false;
+        }
+        else            
+        {
+            return true;
+        }
+    }
     
     public void loadAccounts()
     {
@@ -433,27 +515,7 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
         resetLocations();
         resetProjects();
     }
-    
-    public void loadForm(String id)
-    {
-        task = api_controller.getSingleTask(id);
-        
-        if(task != null)
-        {
-            // Parse the task time.
-            DateTimeFormatter psql_format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            DateTimeFormatter date_format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            DateTimeFormatter time_format = DateTimeFormatter.ofPattern("hh:mma");
-            LocalDateTime date_time = LocalDateTime.parse(task.startTime());
-        
-            subject_field.setText(task.subject());
-            date_field.setText(date_time.format(date_format));
-            time_selector.setSelectedItem(date_time.format(time_format));
-            status_selector.setSelectedItem(task.status());
-        }
-        
-    }
-    
+  
     public void loadLocations(String account)
     {
         resetLocations();
@@ -518,6 +580,114 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
         // Relying on the loop function of adding time.
         // Once we go back to 00:00 exit the loop.
         } while(time.isAfter(LocalTime.parse("00:04")));
+    }
+        
+    public void populateForm(String id)
+    {
+        task = api_controller.getSingleTask(id);
+        
+        if(task != null)
+        {
+            // Parse the task time.
+            LocalDateTime date_time = LocalDateTime.parse(task.startTime(), psql_format);
+            String duration = convertDurationToString(task.duration());
+            String[] dur_part = duration.split(" ");
+                        
+            // Task Summary
+            subject_field.setText(task.subject());
+            date_field.setText(date_time.format(date_format));
+            time_selector.setSelectedItem(date_time.format(time_format));
+            duration_spinner.setValue(Float.valueOf(dur_part[0]));
+            duration_unit_selector.setSelectedItem(dur_part[1]);
+            
+            if(inSelector(status_selector, task.status().toString()))
+            {
+                status_selector.setSelectedItem(task.status().toString());
+            }
+            else
+            {
+                addToSelector(status_selector, task.status().toString());
+            }
+            
+            // Task Info
+            account_selector.setSelectedItem(task.account());
+            
+            if(task.project() != null)
+            {
+                if(inSelector(project_selector, task.project()))
+                {
+                    project_selector.setSelectedItem(task.project());
+                }
+                else
+                {
+                    addToSelector(project_selector, task.project());
+                }
+            }
+            else
+            {
+                project_selector.setSelectedItem("[none]");
+            }
+            
+            if(task.location() != null)
+            {
+                if(inSelector(location_selector, task.location()))
+                {
+                    location_selector.setSelectedItem(task.location());
+                }
+                else
+                {
+                    addToSelector(location_selector, task.location());
+                }
+            }
+            else
+            {
+                location_selector.setSelectedItem("[none]");
+            }
+            
+            // Task Details
+            if(task.description() != null)
+            {
+                details_area.setText(task.description());
+            }
+        }
+        
+    }
+    
+    private void populateNew()
+    {
+        task = new Task();
+        
+        LocalDateTime now = LocalDateTime.now();
+        
+        // Summary Tab
+        subject_field.setText("");
+        date_field.setText(now.format(date_format));
+        time_selector.setSelectedItem(now.format(time_format));
+        duration_spinner.setValue(5);
+        duration_unit_selector.setSelectedItem("min");
+        status_selector.setSelectedItem("ACTIVE");
+        
+        // Info Tab
+        project_selector.setSelectedItem("[none]");
+        location_selector.setSelectedItem("[none]");
+        group_selector.setSelectedItem("[none]");
+        contact_selector.setSelectedItem("[none]");
+        
+        // Details Tab
+        details_area.setText("");
+    }
+    
+    private void populateTask()
+    {
+        // Fills in the task variable with the form information.
+        task.setSubject(subject_field.getText());
+        task.setDuration(convertDurationToInt(Float.valueOf(duration_spinner.getValue().toString()),duration_unit_selector.getSelectedItem().toString()));
+        task.setStartTime(date_field.getText() + " " + time_selector.getSelectedItem().toString());
+        task.setStatus(status_selector.getSelectedItem().toString());
+        task.setContact(owner_selector.getSelectedItem().toString());
+        task.setAccount(account_selector.getSelectedItem().toString());
+        task.setProject(project_selector.getSelectedItem().toString());
+        task.setLocation(location_selector.getSelectedItem().toString());
     }
     
     public void resetContacts()
@@ -599,4 +769,7 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
     private Controller api_controller;
     private ArrayList<Task> task_list;
     private Task task;
+    private DateTimeFormatter psql_format;
+    private DateTimeFormatter date_format;
+    private DateTimeFormatter time_format;
 }

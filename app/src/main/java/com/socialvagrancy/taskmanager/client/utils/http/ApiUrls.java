@@ -81,5 +81,9 @@ public class ApiUrls
             return base_url + "api/token"; 
 	}
 
+        public static String putTask(String base_url, String account)
+        {
+            return base_url + "api/account/" + account + "/task";
+        }
 
 }
