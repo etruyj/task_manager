@@ -79,6 +79,9 @@ public class CreateTask
 			PreparedStatement pst = psql.prepare(query, logbook);
 
 			pst.setObject(1, UUID.fromString(task.id()));
+
+			System.err.println("TASK test");
+
 			pst.setString(2, task.subject());
 			
 			// Allow for no assigned description
@@ -97,6 +100,9 @@ public class CreateTask
 			pst.setObject(7, UUID.fromString(org_id));
 			pst.setObject(8, UUID.fromString(task.account()));
 			pst.setObject(9, UUID.fromString(task.contact()));
+			
+			System.err.println("TASK test");
+
 			
 			// Allow for no assigned location
 			if(task.location() == null)
