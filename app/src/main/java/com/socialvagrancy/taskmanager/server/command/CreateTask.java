@@ -79,9 +79,6 @@ public class CreateTask
 			PreparedStatement pst = psql.prepare(query, logbook);
 
 			pst.setObject(1, UUID.fromString(task.id()));
-
-			System.err.println("TASK test");
-
 			pst.setString(2, task.subject());
 			
 			// Allow for no assigned description
@@ -97,16 +94,10 @@ public class CreateTask
 			pst.setTimestamp(4, Timestamp.valueOf(task.startTime()));
 			pst.setInt(5, task.duration());
 			pst.setObject(6, task.status(), Types.OTHER);
-			
-			System.err.println("TASK test");
-
 			pst.setObject(7, UUID.fromString(org_id));
-			
-			System.err.println("TASK test");
-
 			pst.setObject(8, UUID.fromString(task.account()));
 			
-			System.err.println("TASK test");
+			System.err.println("TASK test: contact " + task.contact());
 
 			pst.setObject(9, UUID.fromString(task.contact()));
 			
