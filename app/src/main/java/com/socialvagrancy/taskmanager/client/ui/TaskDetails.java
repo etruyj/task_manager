@@ -37,7 +37,7 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
         //=======================================
         // Variable declaration
         //=======================================
-        psql_format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        input_format = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mma");
         date_format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         time_format = DateTimeFormatter.ofPattern("hh:mma");
         
@@ -590,7 +590,7 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
         if(task != null)
         {
             // Parse the task time.
-            LocalDateTime date_time = LocalDateTime.parse(task.startTime(), psql_format);
+            LocalDateTime date_time = LocalDateTime.parse(task.startTime(), input_format);
             String duration = convertDurationToString(task.duration());
             String[] dur_part = duration.split(" ");
                         
@@ -770,7 +770,7 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
     private Controller api_controller;
     private ArrayList<Task> task_list;
     private Task task;
-    private DateTimeFormatter psql_format;
+    private DateTimeFormatter input_format;
     private DateTimeFormatter date_format;
     private DateTimeFormatter time_format;
 }
