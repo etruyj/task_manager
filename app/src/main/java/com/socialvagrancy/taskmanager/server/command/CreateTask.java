@@ -104,8 +104,6 @@ public class CreateTask
 			pst.setObject(8, UUID.fromString(task.account()));
 			pst.setObject(9, UUID.fromString(task.contact()));
 			
-			System.err.println("TASK test: location " + task.location());
-			
 			// Allow for no assigned location
 			if(task.location() == null)
 			{
@@ -115,8 +113,6 @@ public class CreateTask
 			{
 				pst.setObject(10, UUID.fromString(task.location()));
 			}
-			
-			System.err.println("TASK test: project " + task.project());
 			
 			// Allow for no assigned project
 			if(task.project() == null)
@@ -128,7 +124,6 @@ public class CreateTask
 				pst.setObject(11, UUID.fromString(task.project()));
 			}
 
-			System.err.println("TASK test: recurrance " + task.recurranceId());
 			// Allow for no assigned recurrance
 			if(task.recurranceId() == null)
 			{
