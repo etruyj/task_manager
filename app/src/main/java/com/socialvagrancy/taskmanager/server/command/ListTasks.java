@@ -42,15 +42,18 @@ public class ListTasks
 			// Convert the yyyy-MM-ddTHH:mm:ss timestamp
 			// passed by the client to a parseable format
 			// yy-MM-dd HH:mm:ss
+			/*
+			 * Mark for deletion
 			String start = ConvertDate.timestampToPsql(range_start);
 			String end = ConvertDate.timestampToPsql(range_end);
+			*/
 
 			PreparedStatement pst = psql.prepare(query, logbook);
 
 			pst.setObject(1, UUID.fromString(contact_id));
 			pst.setObject(2, UUID.fromString(org_id));
-			pst.setTimestamp(3, Timestamp.valueOf(start));
-			pst.setTimestamp(4, Timestamp.valueOf(end));
+			pst.setTimestamp(3, Timestamp.valueOf(range_start));
+			pst.setTimestamp(4, Timestamp.valueOf(range_end));
 
 			ResultSet rs = pst.executeQuery();
 			
