@@ -53,9 +53,12 @@ public class CreateTask
 
 		try
 		{
+			//=================================
 			// Convert human readable names to ids.
+			//=================================
+			
 			task.setAccount(AccountId.fromName(task.account(), org_id, psql, logbook));
-			task.setContact(ContactId.fromName(task.contact(), task.account(), org_id, psql, logbook));
+			task.setContact(ContactId.forOwner(task.contact(), org_id, psql, logbook));
 			
 			if(!task.project().equals("[none]"))
 			{
@@ -75,7 +78,10 @@ public class CreateTask
 				task.setLocation(null);
 			}
 
+			//=================================
 			// Insert the account info
+			//=================================
+			
 			PreparedStatement pst = psql.prepare(query, logbook);
 
 			pst.setObject(1, UUID.fromString(task.id()));
