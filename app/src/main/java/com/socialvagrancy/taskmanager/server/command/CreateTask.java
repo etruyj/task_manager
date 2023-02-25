@@ -97,8 +97,17 @@ public class CreateTask
 			pst.setTimestamp(4, Timestamp.valueOf(task.startTime()));
 			pst.setInt(5, task.duration());
 			pst.setObject(6, task.status(), Types.OTHER);
+			
+			System.err.println("TASK test");
+
 			pst.setObject(7, UUID.fromString(org_id));
+			
+			System.err.println("TASK test");
+
 			pst.setObject(8, UUID.fromString(task.account()));
+			
+			System.err.println("TASK test");
+
 			pst.setObject(9, UUID.fromString(task.contact()));
 			
 			System.err.println("TASK test");
