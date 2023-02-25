@@ -7,6 +7,7 @@ package com.socialvagrancy.taskmanager.client.ui;
 import com.socialvagrancy.taskmanager.client.command.GetTasks;
 import com.socialvagrancy.taskmanager.client.ui.Controller;
 import com.socialvagrancy.taskmanager.client.ui.component.TaskItem;
+import com.socialvagrancy.taskmanager.client.utils.converter.UtcDate;
 import com.socialvagrancy.taskmanager.structure.Contact;
 import com.socialvagrancy.taskmanager.structure.Task;
 
@@ -216,7 +217,7 @@ public class TaskList extends javax.swing.JPanel implements Screen {
 
         for(int i=0; i<task_list.size(); i++)
         {
-            task = new TaskItem(task_list.get(i).startTime(), task_list.get(i).subject(), task_list.get(i).id(), task_list.get(i).status().toString(), task_clicked_listener);
+            task = new TaskItem(task_list.get(i).startTime(), task_list.get(i).subject(), task_list.get(i).id(), task_list.get(i).statusString(), task_clicked_listener);
             task_panel.add(task);
         }
         

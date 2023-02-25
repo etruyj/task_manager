@@ -27,10 +27,13 @@ public class TaskItem extends JLabel
     private Status task_status;
     private ActionListener task_clicked_listener;
     private MouseListener clickable_listener;
+
+    private static DateTimeFormatter task_format = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mma");
+    private static DateTimeFormatter output_format = DateTimeFormatter.ofPattern("hh:mma");
     
     private enum Status {
         ACTIVE(0,0,255), // Blue
-        COMPLETED(204,204,204), // Light Gray
+        COMPLETE(204,204,204), // Light Gray
         BLOCKED(211,84,0), // Custom - Orange
         PAST_DUE(255,0,0); // Red
         
@@ -46,16 +49,30 @@ public class TaskItem extends JLabel
         }
         
         public Color color() { return new Color(this.red_value, this.green_value, this.blue_value); }
+        public static Status fromString(String status)
+        {
+            // Convert String to Status
+            // .valueOf(String status) wasn't working for ACTIVE
+            for(Status s : Status.values())
+            {
+                if(s.toString().equalsIgnoreCase(status))
+                {
+                    return s;
+                }
+            }
+            
+            return null;
+        }
     }
     
     public TaskItem(String start_time, String task_summary, String task_id, String status, ActionListener task_clicked)
     {
         if(status.equals("ACTIVE"))
         {
-            status = parseStatus(status);
+            status = parseStatus(start_time);
         }
-        
-        task_status = Status.valueOf(status);
+
+        task_status = Status.fromString(status);
         time = convertDateStamp(start_time);
         summary = task_summary;
         id = task_id;
@@ -93,9 +110,7 @@ public class TaskItem extends JLabel
     
     private String convertDateStamp(String start_date)
     {
-        DateTimeFormatter psql_format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        DateTimeFormatter output_format = DateTimeFormatter.ofPattern("HH:mma");
-        LocalDateTime time = LocalDateTime.parse(start_date, psql_format);
+        LocalDateTime time = LocalDateTime.parse(start_date, task_format);
 
         
         return time.format(output_format);
@@ -104,7 +119,7 @@ public class TaskItem extends JLabel
     private String parseStatus(String start_date)
     {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime task_due = LocalDateTime.parse(start_date);
+        LocalDateTime task_due = LocalDateTime.parse(start_date, task_format);
         
         if(task_due.isBefore(now))
         {

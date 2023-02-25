@@ -39,7 +39,7 @@ public class GetTasks
             try
             {
                 Task task = gson.fromJson(response, Task.class);
-                
+                task.setStartTime(UtcDate.utcToLocal(task.startTime(), "yyyy-MM-dd hh:mma"));
                 logbook.info("Found task: " + id);
                 
                 return task;
@@ -57,8 +57,8 @@ public class GetTasks
 		Gson gson = new Gson();
                 ArrayList<Task> task_list = new ArrayList<Task>();
                 
-                String range_start = UtcDate.localToUtc(date + "T00:00:00");
-                String range_end = UtcDate.localToUtc(date + "T23:59:59");
+                String range_start = UtcDate.localToUtc(date + " 00:00:00", "yyyy-MM-dd HH:mm:ss");
+                String range_end = UtcDate.localToUtc(date + " 23:59:59", "yyyy-MM-dd HH:mm:ss");
                 
                 String api_url = ApiUrls.listTasks(base_url, contact, range_start, range_end);
                 
@@ -74,6 +74,7 @@ public class GetTasks
                 
                     for(int i=0; i<tasks.length; i++)
                     {
+                        tasks[i].setStartTime(UtcDate.utcToLocal(tasks[i].startTime(), "yyyy-MM-dd hh:mma"));
                         task_list.add(tasks[i]);
                     }
                     

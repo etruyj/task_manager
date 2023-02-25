@@ -14,29 +14,32 @@ import java.time.format.DateTimeFormatter;
 
 public class UtcDate
 {
-	public static String localToUtc(String timestamp)
+	private static DateTimeFormatter client_format = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mma");
+        private static DateTimeFormatter psql_format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        
+        public static String localToUtc(String timestamp, String format)
 	{
 		String utc_zone = "UTC";
-		DateTimeFormatter client_format = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mma");
-                LocalDateTime local = LocalDateTime.parse(timestamp, client_format);
+                DateTimeFormatter passed_format = DateTimeFormatter.ofPattern(format);
+                LocalDateTime local = LocalDateTime.parse(timestamp, passed_format);
 		
 		ZonedDateTime utc_time = ZonedDateTime.of(local, ZoneId.systemDefault());
 
 //		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-		return utc_time.withZoneSameInstant(ZoneId.of(utc_zone)).toLocalDateTime().toString();
+		return utc_time.withZoneSameInstant(ZoneId.of(utc_zone)).toLocalDateTime().format(psql_format);
 	}
 
-	public static String utcToLocal(String timestamp)
+	public static String utcToLocal(String timestamp, String format)
 	{
 		String utc_zone = "UTC";
-		LocalDateTime local = LocalDateTime.parse(timestamp);
-		
-		ZonedDateTime utc_time = ZonedDateTime.of(local, ZoneId.of(utc_zone));
+                LocalDateTime utc_time = LocalDateTime.parse(timestamp, psql_format);
+                
+		ZonedDateTime local = ZonedDateTime.of(utc_time, ZoneId.of(utc_zone));
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-		return utc_time.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime().format(formatter);
+                DateTimeFormatter client_desired_format = DateTimeFormatter.ofPattern(format);
+                
+                return local.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime().format(client_desired_format);
 	}
 
 }

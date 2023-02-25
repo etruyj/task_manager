@@ -27,7 +27,9 @@ public class SaveTask
 
 		try
 		{
-			String response = api.put(api_url, token, gson.toJson(task));
+                    logbook.debug(gson.toJson(task));
+                    
+                    String response = api.put(api_url, token, gson.toJson(task));
 
 			logbook.debug(response);
 

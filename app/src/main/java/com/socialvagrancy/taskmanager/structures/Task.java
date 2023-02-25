@@ -37,6 +37,7 @@ public class Task
 	public String recurranceId() { return recurrance_id; }
 	public String startTime() { return start_time; }
 	public TaskStatus status() { return status; }
+        public String statusString() { return status.toString(); }
 	public String subject() { return subject; }
 
 	//=======================================

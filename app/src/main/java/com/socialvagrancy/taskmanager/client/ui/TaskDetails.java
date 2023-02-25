@@ -5,6 +5,7 @@
 package com.socialvagrancy.taskmanager.client.ui;
 
 import com.socialvagrancy.taskmanager.client.ui.Controller;
+import com.socialvagrancy.taskmanager.client.utils.converter.UtcDate;
 import com.socialvagrancy.taskmanager.structure.Account;
 import com.socialvagrancy.taskmanager.structure.Contact;
 import com.socialvagrancy.taskmanager.structure.Location;
@@ -682,7 +683,7 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
         // Fills in the task variable with the form information.
         task.setSubject(subject_field.getText());
         task.setDuration(convertDurationToInt(Float.valueOf(duration_spinner.getValue().toString()),duration_unit_selector.getSelectedItem().toString()));
-        task.setStartTime(date_field.getText() + " " + time_selector.getSelectedItem().toString());
+        task.setStartTime(UtcDate.localToUtc(date_field.getText() + " " + time_selector.getSelectedItem().toString(), "yyyy-MM-dd hh:mma"));
         task.setStatus(status_selector.getSelectedItem().toString());
         task.setContact(owner_selector.getSelectedItem().toString());
         task.setAccount(account_selector.getSelectedItem().toString());
