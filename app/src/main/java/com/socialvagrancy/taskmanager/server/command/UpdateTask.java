@@ -66,7 +66,7 @@ public class UpdateTask
 				task.setLocation(null);
 			}
 
-			if(!task.description().equals(""))
+			if(task.description() != null)
 			{
 				if(task.descriptionId() == null)
 				{
