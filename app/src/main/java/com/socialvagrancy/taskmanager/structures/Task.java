@@ -12,6 +12,7 @@ public class Task
 	String id;
 	String subject;
 	String description;
+        String description_id;
 	String start_time;
 	Integer duration;
 	TaskStatus status;
@@ -30,7 +31,8 @@ public class Task
 	public boolean automate() { return automate; }
 	public String contact() { return contact; }
 	public String description() { return description; }
-	public Integer duration() { return duration; }
+	public String descriptionId() { return description_id; }
+        public Integer duration() { return duration; }
 	public String id() { return id; }
 	public String location() { return location; }
 	public String project() { return project; }
@@ -68,6 +70,12 @@ public class Task
 		return this;
 	}
 
+        public Task setDescriptionId(String s)
+        {
+            description_id = s;
+            return this;
+        }
+        
 	public Task setDuration(int s)
 	{
 		duration = s;

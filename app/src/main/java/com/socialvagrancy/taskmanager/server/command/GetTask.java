@@ -47,7 +47,7 @@ public class GetTask
 				task.setStartTime(rs.getString(3));
 				task.setStatus(rs.getString(4));
 				task.setDuration(rs.getInt(5));
-				task.setDescription(rs.getString(6));
+				task.setDescriptionId(rs.getString(6));
 				task.setAccount(rs.getString(7));
 				task.setContact(rs.getString(9) + ", " + rs.getString(8));
 				task.setLocation(rs.getString(10));

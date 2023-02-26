@@ -608,8 +608,16 @@ public class TaskManagerAPI
 				if(min_required.checkPermissions(creds.permissions()))
 				{
 					Task task = gson.fromJson(body, Task.class);
+					
+					// Determine if the task exists based on whether or not there is an associated id.
+					if(task.id() == null)
+					{
+						task = CreateTask.parseThenCreate(task, creds.organization(), psql, logbook);
+					}
+					else
+					{
 
-					task = CreateTask.parseThenCreate(task, creds.organization(), psql, logbook);
+					}
 
 					return gson.toJson(task);
 				}
