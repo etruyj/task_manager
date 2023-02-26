@@ -613,12 +613,10 @@ public class TaskManagerAPI
 					// Determine if the task exists based on whether or not there is an associated id.
 					if(task.id() == null)
 					{
-						System.err.println("Create task");
 						task = CreateTask.parseThenCreate(task, creds.organization(), psql, logbook);
 					}
 					else
 					{
-						System.err.println("Update task");
 						task = UpdateTask.withId(task, creds.organization(), psql, logbook);
 					}
 

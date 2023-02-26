@@ -127,15 +127,16 @@ public class UpdateTask
 
 			logbook.debug(pst.toString());
 
-			ResultSet rs = pst.executeQuery();
-
-			if(rs.next())
+			if(pst.executeUpdate() > 0)
 			{
 				logbook.info("Task updated successfully");
 				return task;
 			}
-
-			return null;
+			else
+			{
+				logbook.error("Failed to update task: " + task.id());
+				return null;
+			}
 		}
 		catch(SQLException e)
 		{
