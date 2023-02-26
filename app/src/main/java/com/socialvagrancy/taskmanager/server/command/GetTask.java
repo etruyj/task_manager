@@ -38,6 +38,8 @@ public class GetTask
 			pst.setObject(1, UUID.fromString(id));
 			pst.setObject(2, UUID.fromString(org_id));
 
+			logbook.debug(pst.toString());
+
 			ResultSet rs = pst.executeQuery();
 
 			if(rs.next())
@@ -54,8 +56,6 @@ public class GetTask
 				task.setProject(rs.getString(10));
 				
 			}
-
-			System.err.println(pst);
 
 			return task;
 		}
