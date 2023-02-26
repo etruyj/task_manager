@@ -27,11 +27,11 @@ public class SaveTask
 
 		try
 		{
-                    logbook.debug(gson.toJson(task));
+                    logbook.debug("Sent: " + gson.toJson(task));
                     
                     String response = api.put(api_url, token, gson.toJson(task));
 
-			logbook.debug(response);
+			logbook.debug("Response: " + response);
 
 			Task saved = gson.fromJson(response, Task.class);
 
