@@ -40,6 +40,7 @@ import com.socialvagrancy.taskmanager.server.command.ListProjects;
 import com.socialvagrancy.taskmanager.server.command.ListTasks;
 import com.socialvagrancy.taskmanager.server.command.UpdateAccount;
 import com.socialvagrancy.taskmanager.server.command.UpdateLocation;
+import com.socialvagrancy.taskmanager.server.command.UpdateTask;
 import com.socialvagrancy.taskmanager.server.command.ValidateToken;
 import com.socialvagrancy.taskmanager.server.utils.database.PostgresConnector;
 import com.socialvagrancy.taskmanager.structure.Account;
@@ -616,7 +617,7 @@ public class TaskManagerAPI
 					}
 					else
 					{
-
+						task = UpdateTask.withId(task, creds.organization(), psql, logbook);
 					}
 
 					return gson.toJson(task);

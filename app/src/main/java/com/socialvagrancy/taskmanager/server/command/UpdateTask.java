@@ -24,7 +24,7 @@ import java.util.UUID;
 
 public class UpdateTask
 {
-	public static Task byId(Task task, String org_id, PostgresConnector psql, Logger logbook) throws Exception
+	public static Task withId(Task task, String org_id, PostgresConnector psql, Logger logbook) throws Exception
 	{
 		logbook.info("Updating task: " + org_id + ":" + task.id());
 
