@@ -20,6 +20,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class CreateTask
@@ -49,7 +50,7 @@ public class CreateTask
 
 	public static Task insertNew(Task task, String org_id, PostgresConnector psql, Logger logbook) throws Exception
 	{
-		String query = "INSERT INTO task (id, subject, text_id, start_time, duration, status, organization_id, account_id, contact_id, location_id, project_id, recurrance_id, automate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+		String query = "INSERT INTO task (id, subject, text_id, start_time, duration, status, organization_id, account_id, contact_id, location_id, project_id, recurrance_id, automate, date_created) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 		try
 		{
@@ -103,7 +104,7 @@ public class CreateTask
 			pst.setObject(7, UUID.fromString(org_id));
 			pst.setObject(8, UUID.fromString(task.account()));
 			pst.setObject(9, UUID.fromString(task.contact()));
-			
+
 			// Allow for no assigned location
 			if(task.location() == null)
 			{
@@ -135,7 +136,8 @@ public class CreateTask
 			}
 
 			pst.setBoolean(13, task.automate());
-			
+			pst.setTimestamp(14, Timestamp.valueOf(LocalDateTime.now()));
+
 			logbook.debug(pst.toString());
 
 			pst.executeUpdate();

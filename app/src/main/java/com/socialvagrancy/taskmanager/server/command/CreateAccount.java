@@ -13,6 +13,8 @@ import com.socialvagrancy.utils.Logger;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class CreateAccount
@@ -87,7 +89,7 @@ public class CreateAccount
 		account.setName(name);
 		account.setAbbreviation(name);
 
-		String query = "INSERT INTO account (id, name, abbreviation, text_id, organization_id) VALUES (?, ?, ?, ?, ?)";
+		String query = "INSERT INTO account (id, name, abbreviation, text_id, organization_id, date_created) VALUES (?, ?, ?, ?, ?, ?)";
 
 		try
 		{
@@ -98,7 +100,10 @@ public class CreateAccount
 			pst.setString(3, account.abbreviation());
 			pst.setObject(4, null);
 			pst.setObject(5, org_id);
+			pst.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
 
+			logbook.debug("QUERY: " + pst.toString());
+		
 			pst.executeUpdate();
 
 		}
@@ -154,7 +159,7 @@ public class CreateAccount
 		{
 			try
 			{
-				String query = "INSERT INTO account (id, name, abbreviation, text_id, organization_id) VALUES (?, ?, ?, ?, ?);";
+				String query = "INSERT INTO account (id, name, abbreviation, text_id, organization_id, date_created) VALUES (?, ?, ?, ?, ?, ?);";
 				PreparedStatement pst = psql.prepare(query, logbook);
 			
 				pst.setObject(1, UUID.fromString(account.id()));
@@ -162,6 +167,9 @@ public class CreateAccount
 				pst.setString(3, account.name());
 				pst.setObject(4, UUID.fromString(account.description()));
 				pst.setObject(5, org_id);
+				pst.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
+
+				logbook.debug("QUERY: " + pst.toString());
 
 				pst.executeUpdate();
 

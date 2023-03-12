@@ -4,17 +4,27 @@
  */
 package com.socialvagrancy.taskmanager.client.ui;
 
+import com.socialvagrancy.taskmanager.client.ui.Controller;
+import com.socialvagrancy.taskmanager.structure.Account;
+
+import java.util.ArrayList;
+
 /**
  *
  * @author seans
  */
-public class AccountSearch extends javax.swing.JPanel {
+public class AccountSearch extends javax.swing.JPanel implements Screen{
 
     /**
      * Creates new form AccountSearch
      */
     public AccountSearch() {
         initComponents();
+        
+        // Clear the search_field text.
+        // It's currently set in order to 
+        search_field.setText("");
+        
     }
 
     /**
@@ -26,58 +36,83 @@ public class AccountSearch extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        search_panel = new javax.swing.JPanel();
         search_field = new javax.swing.JTextField();
         search_button = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        search_results = new javax.swing.JTextArea();
-        results_scroll = new javax.swing.JScrollBar();
+        results_search_panel = new javax.swing.JScrollPane();
+        jPanel1 = new javax.swing.JPanel();
+        button_panel = new javax.swing.JPanel();
 
         setBorder(javax.swing.BorderFactory.createTitledBorder("Account Search"));
+        setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.Y_AXIS));
+
+        search_field.setToolTipText("");
+        search_field.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        search_field.setMargin(new java.awt.Insets(10, 10, 10, 10));
+        search_field.setMinimumSize(new java.awt.Dimension(280, 20));
+        search_field.setPreferredSize(new java.awt.Dimension(280, 19));
+        search_panel.add(search_field);
 
         search_button.setText("Search");
+        search_button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                search_buttonActionPerformed(evt);
+            }
+        });
+        search_panel.add(search_button);
 
-        search_results.setColumns(20);
-        search_results.setRows(5);
-        jScrollPane1.setViewportView(search_results);
+        add(search_panel);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(results_scroll, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(search_field, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(search_button, javax.swing.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE)))
-                .addContainerGap())
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 423, Short.MAX_VALUE)
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(search_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(search_button))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 389, Short.MAX_VALUE)
-                    .addComponent(results_scroll, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 497, Short.MAX_VALUE)
         );
+
+        results_search_panel.setViewportView(jPanel1);
+
+        add(results_search_panel);
+        add(button_panel);
     }// </editor-fold>//GEN-END:initComponents
 
+    @Override
+    public void refresh(String search_string)
+    {
+        account_list = api_controller.getAccounts(search_string);
+        
+        
+        
+        revalidate();
+        repaint();
+    }
+    
+    private void search_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_search_buttonActionPerformed
+        refresh(search_field.getText());
+    }//GEN-LAST:event_search_buttonActionPerformed
+    
+    @Override
+    public void setApiController(Controller api)
+    {
+        api_controller = api;
+    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollBar results_scroll;
+    private javax.swing.JPanel button_panel;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane results_search_panel;
     private javax.swing.JButton search_button;
     private javax.swing.JTextField search_field;
-    private javax.swing.JTextArea search_results;
+    private javax.swing.JPanel search_panel;
     // End of variables declaration//GEN-END:variables
+    private ArrayList<Account> account_list;
+    private Controller api_controller;
 }

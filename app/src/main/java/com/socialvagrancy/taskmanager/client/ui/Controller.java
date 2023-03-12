@@ -13,6 +13,7 @@ import com.socialvagrancy.taskmanager.client.command.GetProjects;
 import com.socialvagrancy.taskmanager.client.command.GetTasks;
 import com.socialvagrancy.taskmanager.client.command.Login;
 import com.socialvagrancy.taskmanager.client.command.SaveTask;
+import com.socialvagrancy.taskmanager.client.command.SearchAccounts;
 import com.socialvagrancy.taskmanager.structure.Account;
 import com.socialvagrancy.taskmanager.structure.Contact;
 import com.socialvagrancy.taskmanager.structure.Location;
@@ -47,6 +48,20 @@ public class Controller
 			ArrayList<Account> account_list = GetAccounts.all(base_url, token, api, logbook);
 
 			return account_list;
+		}
+		catch(Exception e)
+		{
+			logbook.error(e.getMessage());
+
+			return new ArrayList<Account>();
+		}
+	}
+
+	public ArrayList<Account> getAccounts(String account)
+	{
+		try
+		{
+			return SearchAccounts.byName(account, base_url, token, api, logbook);
 		}
 		catch(Exception e)
 		{

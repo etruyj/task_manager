@@ -21,6 +21,7 @@ public class InitializeAccountTable
 			+ "abbreviation VARCHAR, "
 			+ "organization_id UUID, "
 			+ "text_id UUID, "
+			+ "date_created TIMESTAMP NOT NULL, "
 			+ "FOREIGN KEY (organization_id) REFERENCES organization (id), "
 			+ "FOREIGN KEY (text_id) REFERENCES text (id) ON DELETE CASCADE);";
 

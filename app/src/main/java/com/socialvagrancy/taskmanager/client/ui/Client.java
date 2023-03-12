@@ -33,13 +33,20 @@ public class Client extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        calendarPanel1 = new com.github.lgooddatepicker.components.CalendarPanel();
         display_pane = new javax.swing.JPanel();
         menu_bar = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
+        file_menu = new javax.swing.JMenu();
         properties_option = new javax.swing.JMenuItem();
         logout_option = new javax.swing.JMenuItem();
         quit_option = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
+        edit_menu = new javax.swing.JMenu();
+        task_menu = new javax.swing.JMenu();
+        new_task_item = new javax.swing.JMenuItem();
+        list_task_item = new javax.swing.JMenuItem();
+        account_menu = new javax.swing.JMenu();
+        new_account_item = new javax.swing.JMenuItem();
+        search_account_item = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(400, 500));
@@ -47,13 +54,13 @@ public class Client extends javax.swing.JFrame {
         display_pane.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         display_pane.setLayout(new java.awt.CardLayout());
 
-        jMenu1.setText("File");
+        file_menu.setText("File");
 
         properties_option.setText("Properties");
-        jMenu1.add(properties_option);
+        file_menu.add(properties_option);
 
         logout_option.setText("Logout");
-        jMenu1.add(logout_option);
+        file_menu.add(logout_option);
 
         quit_option.setText("Quit");
         quit_option.addActionListener(new java.awt.event.ActionListener() {
@@ -61,12 +68,52 @@ public class Client extends javax.swing.JFrame {
                 quit_optionActionPerformed(evt);
             }
         });
-        jMenu1.add(quit_option);
+        file_menu.add(quit_option);
 
-        menu_bar.add(jMenu1);
+        menu_bar.add(file_menu);
 
-        jMenu2.setText("Edit");
-        menu_bar.add(jMenu2);
+        edit_menu.setText("Edit");
+        menu_bar.add(edit_menu);
+
+        task_menu.setText("Task");
+
+        new_task_item.setText("New");
+        new_task_item.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                new_task_itemActionPerformed(evt);
+            }
+        });
+        task_menu.add(new_task_item);
+
+        list_task_item.setText("List");
+        list_task_item.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                list_task_itemActionPerformed(evt);
+            }
+        });
+        task_menu.add(list_task_item);
+
+        menu_bar.add(task_menu);
+
+        account_menu.setText("Account");
+
+        new_account_item.setText("New Account");
+        new_account_item.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                new_account_itemActionPerformed(evt);
+            }
+        });
+        account_menu.add(new_account_item);
+
+        search_account_item.setText("Search Accounts");
+        search_account_item.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                search_account_itemActionPerformed(evt);
+            }
+        });
+        account_menu.add(search_account_item);
+
+        menu_bar.add(account_menu);
 
         setJMenuBar(menu_bar);
 
@@ -137,9 +184,9 @@ public class Client extends javax.swing.JFrame {
   
         refresh();
         // Testing
-        //logged_in = true;
-        //showScreen("TASK_DETAILS", "NEW");
-        showScreen("LOGIN", null);
+        logged_in = true;
+        showScreen("ACCOUNT_SEARCH", "NEW");
+        //showScreen("LOGIN", null);
 
     }
     
@@ -175,6 +222,9 @@ public class Client extends javax.swing.JFrame {
         
         switch (command)
         {
+                case "ACCOUNT_SEARCH":
+                    showScreen("ACCOUNT_SEARCH", object_id);
+                    break;
                 case "LOGIN_SUCCESSFUL":
                 case "TASK_LIST":
                     logged_in = true;
@@ -193,6 +243,22 @@ public class Client extends javax.swing.JFrame {
     private void quit_optionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quit_optionActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_quit_optionActionPerformed
+
+    private void new_task_itemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_new_task_itemActionPerformed
+        processButtonActions("TASK_DETAILS:NEW");
+    }//GEN-LAST:event_new_task_itemActionPerformed
+
+    private void list_task_itemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_list_task_itemActionPerformed
+        processButtonActions("TASK_LIST:LAST");
+    }//GEN-LAST:event_list_task_itemActionPerformed
+
+    private void new_account_itemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_new_account_itemActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_new_account_itemActionPerformed
+
+    private void search_account_itemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_search_account_itemActionPerformed
+        processButtonActions("ACCOUNT_SEARCH:BLANK");
+    }//GEN-LAST:event_search_account_itemActionPerformed
 
     private void refresh()
     {
@@ -294,13 +360,20 @@ public class Client extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu account_menu;
+    private com.github.lgooddatepicker.components.CalendarPanel calendarPanel1;
     private javax.swing.JPanel display_pane;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu edit_menu;
+    private javax.swing.JMenu file_menu;
+    private javax.swing.JMenuItem list_task_item;
     private javax.swing.JMenuItem logout_option;
     private javax.swing.JMenuBar menu_bar;
+    private javax.swing.JMenuItem new_account_item;
+    private javax.swing.JMenuItem new_task_item;
     private javax.swing.JMenuItem properties_option;
     private javax.swing.JMenuItem quit_option;
+    private javax.swing.JMenuItem search_account_item;
+    private javax.swing.JMenu task_menu;
     // End of variables declaration//GEN-END:variables
     
     // Import External Components

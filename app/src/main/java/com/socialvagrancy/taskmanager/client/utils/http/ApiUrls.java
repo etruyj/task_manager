@@ -14,10 +14,15 @@ public class ApiUrls
         }
         
         public static String listAccounts(String base_url)
-	{
+	{            
 		return base_url + "api/accounts";
 	}
 
+        public static String listAccounts(String base_url, String name)
+        {
+            return base_url + "api/accounts?name=" + name;
+        }
+        
         public static String listContacts(String base_url, String account, boolean is_active)
         {
             String active = "true";

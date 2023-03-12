@@ -5,6 +5,7 @@
 package com.socialvagrancy.taskmanager.client.ui;
 
 import com.socialvagrancy.taskmanager.client.ui.Controller;
+import com.socialvagrancy.taskmanager.client.ui.component.CalendarPopup;
 import com.socialvagrancy.taskmanager.client.utils.converter.UtcDate;
 import com.socialvagrancy.taskmanager.structure.Account;
 import com.socialvagrancy.taskmanager.structure.Contact;
@@ -40,6 +41,13 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
         input_format = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mma");
         date_format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         time_format = DateTimeFormatter.ofPattern("hh:mma");
+        date_picker = new CalendarPopup(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent selected_date)
+            {
+                date_field.setText(selected_date.getActionCommand());
+            }
+        }, "MM-dd-yyyy");
         
         //=======================================
         // Add action listeners
@@ -137,6 +145,14 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
         details_box = new javax.swing.JPanel();
         details_scroll_pane = new javax.swing.JScrollPane();
         details_area = new javax.swing.JTextArea();
+        automation_box = new javax.swing.JPanel();
+        template_selector_pane = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        jComboBox1 = new javax.swing.JComboBox<>();
+        jPanel2 = new javax.swing.JPanel();
+        jComboBox2 = new javax.swing.JComboBox<>();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
         button_panel = new javax.swing.JPanel();
         new_button = new javax.swing.JButton();
         save_button = new javax.swing.JButton();
@@ -174,6 +190,11 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
         start_time_box.add(date_field);
 
         calendar_button.setText("...");
+        calendar_button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                calendar_buttonActionPerformed(evt);
+            }
+        });
         start_time_box.add(calendar_button);
 
         time_selector.setEditable(true);
@@ -316,6 +337,73 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
 
         jTabbedPane1.addTab("Details", details_box);
 
+        automation_box.setLayout(new java.awt.BorderLayout());
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Type:"));
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 174, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGap(0, 51, Short.MAX_VALUE)
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 51, Short.MAX_VALUE)))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 31, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGap(0, 4, Short.MAX_VALUE)
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 4, Short.MAX_VALUE)))
+        );
+
+        template_selector_pane.add(jPanel1);
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Template:"));
+
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 189, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addGap(0, 58, Short.MAX_VALUE)
+                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 59, Short.MAX_VALUE)))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 31, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addGap(0, 4, Short.MAX_VALUE)
+                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 4, Short.MAX_VALUE)))
+        );
+
+        template_selector_pane.add(jPanel2);
+
+        automation_box.add(template_selector_pane, java.awt.BorderLayout.PAGE_END);
+
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jTextArea1.setText("Automation allows for the client to perform tasks\nbased on configured templates. Examples of automation\ninclude scheduling meetings and sending emails.\nAutomated tasks must be tied to projects and load the\nrequired variables from project information.");
+        jScrollPane1.setViewportView(jTextArea1);
+
+        automation_box.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("Automate", automation_box);
+
         info_panel.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
         add(info_panel);
@@ -381,6 +469,11 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
         }
 
     }//GEN-LAST:event_save_buttonActionPerformed
+
+    private void calendar_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calendar_buttonActionPerformed
+        // TODO add your handling code here:
+        date_picker.toggleCalendar();
+    }//GEN-LAST:event_calendar_buttonActionPerformed
 
     //===========================================
     // Pane Functions
@@ -726,6 +819,7 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel account_box;
     private javax.swing.JComboBox<String> account_selector;
+    private javax.swing.JPanel automation_box;
     private javax.swing.JPanel button_panel;
     private javax.swing.JButton calendar_button;
     private javax.swing.JButton cancel_button;
@@ -746,7 +840,13 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
     private javax.swing.JComboBox<String> group_selector;
     private javax.swing.JPanel info_box;
     private javax.swing.JPanel info_panel;
+    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<String> jComboBox2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JPanel location_box;
     private javax.swing.JComboBox<String> location_selector;
     private javax.swing.JButton new_button;
@@ -761,6 +861,7 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
     private javax.swing.JPanel subject_box;
     private javax.swing.JTextField subject_field;
     private javax.swing.JPanel summary_panel;
+    private javax.swing.JPanel template_selector_pane;
     private javax.swing.JPanel third_row;
     private javax.swing.JComboBox<String> time_selector;
     // End of variables declaration//GEN-END:variables
@@ -770,7 +871,9 @@ public class TaskDetails extends javax.swing.JPanel implements Screen
     private Controller api_controller;
     private ArrayList<Task> task_list;
     private Task task;
+    private CalendarPopup date_picker;
     private DateTimeFormatter input_format;
     private DateTimeFormatter date_format;
     private DateTimeFormatter time_format;
+    
 }
